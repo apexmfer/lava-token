@@ -361,7 +361,6 @@ contract LavaToken is ECRecovery{
    }
 
 
-   //the tokens remain in lava wallet
   function transferTokensWithSignature(LavaPacket memory packet, bytes memory signature) public returns (bool success)
   {
 

@@ -1,21 +1,24 @@
 pragma solidity ^0.5.0;
 
 
-pragma experimental ABIEncoderV2;
 
+/**------------------------------------
 
-/*
 LAVA Token  (0xBTC Token Proxy with Lava Enabled)
 
 This is a 0xBTC proxy token contract.  Deposit your 0xBTC in this contract to receive LAVA tokens.
 
-LAVA tokens can be spent not just by your address, but by anyone as long as they have an ECRecovery signature signed by your private key.
+LAVA tokens can be spent not just by your address, but by anyone as long as they have an ECRecovery signature, signed by your private key, which validates that specific transaction.
 
-The signature is a 'lava packet signature.'  This means that LAVA can be sent by paying a fee of LAVA for the gas, not ETH.
+A relayer reward can be specified in a signed packet.  This means that LAVA can be sent by paying an incentive fee of LAVA to relayers for the gas, not ETH.
 
 LAVA is 1:1 pegged to 0xBTC.
 
-*/
+
+This contract implements EIP712:
+https://github.com/MetaMask/eth-sig-util
+
+------------------------------------*/
 
 
 /**
@@ -178,19 +181,18 @@ contract LavaToken is ECRecovery{
       return LAVAPACKET_TYPEHASH;
   }
 
- function getLavaPacketHash(LavaPacket memory packet) public pure returns (bytes32) {
+ function getLavaPacketHash(string memory methodName, address relayAuthority,address from,address to, address wallet,uint256 tokens,uint256 relayerRewardTokens,uint256 expires,uint256 nonce) public pure returns (bytes32) {
         return keccak256(abi.encode(
             LAVAPACKET_TYPEHASH,
-            keccak256(bytes(packet.methodName)),
-            packet.relayAuthority,
-            packet.from,
-            packet.to,
-            packet.wallet,
-            packet.tokens,
-            packet.relayerRewardTokens,
-            packet.expires,
-            packet.nonce
-        //    keccak256(bytes(packet.callData))
+            keccak256(bytes(methodName)),
+            relayAuthority,
+            from,
+            to,
+            wallet,
+            tokens,
+            relayerRewardTokens,
+            expires,
+            nonce
         ));
     }
 
@@ -200,7 +202,7 @@ contract LavaToken is ECRecovery{
     }
 
     /**
-    * Do not allow Ether to enter
+    * Do not allow ETH to enter
     */
      function() external payable
      {
@@ -283,18 +285,16 @@ contract LavaToken is ECRecovery{
 
 
 
-  // function getLavaPacket(address from,)
 
-   //This replaces getLavaTypedDataHash .. how to handle methodName?
 
-   function getLavaTypedDataHash(LavaPacket memory packet) public  pure returns (bytes32) {
+   function getLavaTypedDataHash(string memory methodName, address relayAuthority,address from,address to, address wallet,uint256 tokens,uint256 relayerRewardTokens,uint256 expires,uint256 nonce) public  pure returns (bytes32) {
 
 
           // Note: we need to use `encodePacked` here instead of `encode`.
           bytes32 digest = keccak256(abi.encodePacked(
               "\x19\x01",
             //  DOMAIN_SEPARATOR,
-              getLavaPacketHash(packet)
+              getLavaPacketHash(methodName,relayAuthority,from,to,wallet,tokens,relayerRewardTokens,expires,nonce)
           ));
           return digest;
       }
@@ -302,7 +302,7 @@ contract LavaToken is ECRecovery{
 
 
 
-   function _tokenApprovalWithSignature(  LavaPacket memory packet, bytes32 sigHash, bytes memory signature) internal returns (bool success)
+   function _tokenApprovalWithSignature(  string memory methodName, address relayAuthority,address from,address to, address wallet,uint256 tokens,uint256 relayerRewardTokens,uint256 expires,uint256 nonce, bytes32 sigHash, bytes memory signature) internal returns (bool success)
    {
 
        /*
@@ -311,9 +311,9 @@ contract LavaToken is ECRecovery{
         If the authority address is a contract, allow its defined 'getAuthority()' delegate to relay
        */
 
-       require( packet.relayAuthority == address(0x0)
-         || (!addressContainsContract(packet.relayAuthority) && msg.sender == packet.relayAuthority)
-         || (addressContainsContract(packet.relayAuthority) && msg.sender == RelayAuthorityInterface(packet.relayAuthority).getRelayAuthority())  );
+       require( relayAuthority == address(0x0)
+         || (!addressContainsContract(relayAuthority) && msg.sender == relayAuthority)
+         || (addressContainsContract(relayAuthority) && msg.sender == RelayAuthorityInterface(relayAuthority).getRelayAuthority())  );
 
 
 
@@ -321,26 +321,26 @@ contract LavaToken is ECRecovery{
 
 
        //make sure the signer is the depositor of the tokens
-       require(packet.from == recoveredSignatureSigner);
+       require(from == recoveredSignatureSigner);
 
 
        //make sure the signature has not expired
-       require(block.number < packet.expires);
+       require(block.number < expires);
 
        uint burnedSignature = burnedSignatures[sigHash];
        burnedSignatures[sigHash] = 0x1; //spent
        require(burnedSignature == 0x0);
 
        //approve the relayer reward
-       allowance[packet.from][msg.sender] = packet.relayerRewardTokens;
-        emit Approval(packet.from, msg.sender, packet.relayerRewardTokens);
+       allowance[from][msg.sender] = relayerRewardTokens;
+       emit Approval(from, msg.sender, relayerRewardTokens);
 
        //transferRelayerReward
-       require(transferTokensFrom(packet.from, msg.sender,   packet.relayerRewardTokens));
+       require(transferTokensFrom(from, msg.sender,   relayerRewardTokens));
 
        //approve transfer of tokens
-       allowance[packet.from][packet.to] = packet.tokens;
-       emit Approval(packet.from,  packet.to, packet.tokens);
+       allowance[from][to] = tokens;
+       emit Approval(from,  to, tokens);
 
 
        return true;
@@ -348,31 +348,31 @@ contract LavaToken is ECRecovery{
 
 
 
-   function approveTokensWithSignature(LavaPacket memory packet, bytes memory signature) public returns (bool success)
+   function approveTokensWithSignature(string memory methodName, address relayAuthority,address from,address to, address wallet,uint256 tokens,uint256 relayerRewardTokens,uint256 expires,uint256 nonce, bytes memory signature) public returns (bool success)
    {
-       require(bytesEqual('approve',bytes(packet.methodName)));
+       require(bytesEqual('approve',bytes(methodName)));
 
-       bytes32 sigHash = getLavaTypedDataHash(packet);
+       bytes32 sigHash = getLavaTypedDataHash(methodName,relayAuthority,from,to,wallet,tokens,relayerRewardTokens,expires,nonce);
 
-       require(_tokenApprovalWithSignature(packet,sigHash,signature));
+       require(_tokenApprovalWithSignature(methodName,relayAuthority,from,to,wallet,tokens,relayerRewardTokens,expires,nonce,sigHash,signature));
 
 
        return true;
    }
 
 
-  function transferTokensWithSignature(LavaPacket memory packet, bytes memory signature) public returns (bool success)
+  function transferTokensWithSignature(string memory methodName, address relayAuthority,address from,address to, address wallet,uint256 tokens,uint256 relayerRewardTokens,uint256 expires,uint256 nonce, bytes memory signature) public returns (bool success)
   {
 
-      require(bytesEqual('transfer',bytes(packet.methodName)));
+      require(bytesEqual('transfer',bytes(methodName)));
 
       //check to make sure that signature == ecrecover signature
-      bytes32 sigHash = getLavaTypedDataHash(packet);
+      bytes32 sigHash = getLavaTypedDataHash(methodName,relayAuthority,from,to,wallet,tokens,relayerRewardTokens,expires,nonce);
 
-      require(_tokenApprovalWithSignature(packet,sigHash,signature));
+      require(_tokenApprovalWithSignature(methodName,relayAuthority,from,to,wallet,tokens,relayerRewardTokens,expires,nonce,sigHash,signature));
 
       //it can be requested that fewer tokens be sent that were approved -- the whole approval will be invalidated though
-      require(transferTokensFrom( packet.from, packet.to,   packet.tokens));
+      require(transferTokensFrom( from, to,  tokens));
 
 
       return true;
@@ -381,19 +381,19 @@ contract LavaToken is ECRecovery{
 
 
 
-     function burnSignature( LavaPacket memory packet,  bytes memory signature) public returns (bool success)
+     function burnSignature( string memory methodName, address relayAuthority,address from,address to, address wallet,uint256 tokens,uint256 relayerRewardTokens,uint256 expires,uint256 nonce,  bytes memory signature) public returns (bool success)
      {
 
 
-        bytes32 sigHash = getLavaTypedDataHash( packet);
+        bytes32 sigHash = getLavaTypedDataHash(methodName,relayAuthority,from,to,wallet,tokens,relayerRewardTokens,expires,nonce);
 
          address recoveredSignatureSigner = recover(sigHash,signature);
 
          //make sure the invalidator is the signer
-         require(recoveredSignatureSigner == packet.from);
+         require(recoveredSignatureSigner == from);
 
          //only the original packet owner can burn signature, not a relay
-         require(packet.from == msg.sender);
+         require(from == msg.sender);
 
          //make sure this signature has never been used
          uint burnedSignature = burnedSignatures[sigHash];
@@ -426,19 +426,19 @@ contract LavaToken is ECRecovery{
 
 
       */
-     function approveAndCall( LavaPacket memory packet, bytes memory signature ) public returns (bool success)   {
+     function approveAndCall( string memory methodName, address relayAuthority,address from,address to, address wallet,uint256 tokens,uint256 relayerRewardTokens,uint256 expires,uint256 nonce, bytes memory signature ) public returns (bool success)   {
 
       // address from, address to, address token, uint256 tokens, uint256 relayerReward,  uint256 expires, uint256 nonce
 
 
-      require(!bytesEqual('approve',bytes(packet.methodName))
-      && !bytesEqual('transfer',bytes(packet.methodName))  );
+      require(!bytesEqual('approve',bytes(methodName))
+      && !bytesEqual('transfer',bytes(methodName))  );
 
-        bytes32 sigHash = getLavaTypedDataHash( packet);
+        bytes32 sigHash = getLavaTypedDataHash(methodName,relayAuthority,from,to,wallet,tokens,relayerRewardTokens,expires,nonce);
 
-        require(_tokenApprovalWithSignature(packet,sigHash,signature));
+        require(_tokenApprovalWithSignature(methodName,relayAuthority,from,to,wallet,tokens,relayerRewardTokens,expires,nonce,sigHash,signature));
 
-        ApproveAndCallFallBack(packet.to).receiveApproval(packet.from, packet.tokens,  bytes(packet.methodName));
+        ApproveAndCallFallBack(to).receiveApproval(from, tokens,  bytes(methodName));
 
         return true;
      }

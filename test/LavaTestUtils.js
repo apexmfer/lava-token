@@ -75,7 +75,7 @@ function typedSignatureHash(typedData) {
 
 
 
- getLavaPacketSchemaHash()
+ getLavaPacketSchemaHash()  //fix me
  {
     var hardcodedSchemaHash = '0x8fd4f9177556bbc74d0710c8bdda543afd18cc84d92d64b5620d5f1881dceb37' ;
     return hardcodedSchemaHash;
@@ -94,7 +94,8 @@ function typedSignatureHash(typedData) {
    return typedDataHash;
  }
 
- getLavaTypedDataFromParams(methodName,relayAuthority,from,to,walletAddress,tokenAddress,tokenAmount,relayerRewardToken,relayerRewardTokens,expires,nonce )
+ getLavaTypedDataFromParams(   methodName,relayAuthority,from,
+   to,walletAddress,tokenAmount, relayerRewardTokens,expires,nonce )
  {
    const typedData = {
            types: {
@@ -105,9 +106,9 @@ function typedSignatureHash(typedData) {
                    { name: 'from', type: 'address' },
                    { name: 'to', type: 'address' },
                    { name: 'wallet', type: 'address' },
-                   { name: 'token', type: 'address' },
+                   //{ name: 'token', type: 'address' },
                    { name: 'tokens', type: 'uint256' },
-                   { name: 'relayerRewardToken', type: 'address' },
+                   //{ name: 'relayerRewardToken', type: 'address' },
                    { name: 'relayerRewardTokens', type: 'uint256' },
                    { name: 'expires', type: 'uint256' },
                    { name: 'nonce', type: 'uint256' }
@@ -124,9 +125,9 @@ function typedSignatureHash(typedData) {
                from: from,
                to: to,
                wallet: walletAddress,
-               token: tokenAddress,
+              // token: tokenAddress,
                tokens: tokenAmount,
-               relayerRewardToken: relayerRewardToken,
+            //   relayerRewardToken: relayerRewardToken,
                relayerRewardTokens: relayerRewardTokens,
                expires: expires,
                nonce: nonce
@@ -150,8 +151,8 @@ function typedSignatureHash(typedData) {
 
 
      static getLavaPacket(
-       methodName,relayAuthority,from,to,wallet,token,tokens,
-       relayerRewardToken,relayerRewardTokens,expires,nonce,signature)
+       methodName,relayAuthority,from,to,wallet,tokens,
+       relayerRewardTokens,expires,nonce,signature)
      {
 
        return {
@@ -160,9 +161,9 @@ function typedSignatureHash(typedData) {
          from: from,
          to: to,
          wallet:wallet,
-         token:token,
+        // token:token,
          tokens:tokens,
-         relayerRewardToken:relayerRewardToken,
+        // relayerRewardToken:relayerRewardToken,
          relayerRewardTokens:relayerRewardTokens,
          expires:expires,
          nonce:nonce,
@@ -179,9 +180,9 @@ function typedSignatureHash(typedData) {
           packetData.from,
           packetData.to,
           packetData.wallet,
-          packetData.token,
+        //  packetData.token,
           packetData.tokens,
-          packetData.relayerRewardToken,
+        //  packetData.relayerRewardToken,
           acketData.relayerRewardTokens,
           packetData.expires,
           packetData.nonce);

@@ -140,7 +140,7 @@ contract LavaToken is ECRecovery{
 
     using SafeMath for uint;
 
-    address public masterToken = 0xB6eD7644C69416d67B522e20bC294A9a9B405B31;
+    address public masterToken;
 
     string public name     = "Lava";
     string public symbol   = "LAVA";
@@ -201,6 +201,13 @@ contract LavaToken is ECRecovery{
     }
 
 
+    constructor(address mToken) public
+    {
+      masterToken = mToken;
+    }
+
+
+
     /**
      *
      * @dev Deposit original tokens, receive proxy tokens 1:1
@@ -226,7 +233,7 @@ contract LavaToken is ECRecovery{
      * @dev Withdraw original tokens, burn proxy tokens 1:1
      *
      * @param from Address to charge fees
-     * 
+     *
      * @param amount Amount of protocol tokens to charge
      */
     function unmutateTokens(  address from, uint amount) public returns (bool)

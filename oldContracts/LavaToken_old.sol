@@ -129,7 +129,7 @@ contract ApproveAndCallFallBack {
 }
 
 
-contract LavaToken is ECRecovery{
+contract LavaTokenOld is ECRecovery{
 
     using SafeMath for uint;
 

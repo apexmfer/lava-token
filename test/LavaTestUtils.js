@@ -175,7 +175,8 @@ function typedSignatureHash(typedData) {
 
      static lavaPacketHasValidSignature(packetData){
 
-       var sigHash = LavaPacketUtils.getLavaTypedDataHash(packetData.methodName,
+       var sigHash = LavaTestUtils.getLavaTypedDataHash(
+         packetData.methodName,
           packetData.relayAuthority,
           packetData.from,
           packetData.to,
@@ -183,7 +184,7 @@ function typedSignatureHash(typedData) {
         //  packetData.token,
           packetData.tokens,
         //  packetData.relayerRewardToken,
-          acketData.relayerRewardTokens,
+          packetData.relayerRewardTokens,
           packetData.expires,
           packetData.nonce);
 

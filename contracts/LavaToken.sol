@@ -1,7 +1,7 @@
 pragma solidity ^0.5.0;
 
 
- pragma experimental ABIEncoderV2;
+pragma experimental ABIEncoderV2;
 
 
 /*
@@ -18,16 +18,20 @@ LAVA is 1:1 pegged to 0xBTC.
 */
 
 
+/**
+ * @title SafeMath
+ * @dev Math operations with safety checks that throw on error
+ */
 library SafeMath {
 
   /**
   * @dev Multiplies two numbers, throws on overflow.
   */
-  function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
+  function mul(uint256 a, uint256 b) internal pure returns (uint256) {
     if (a == 0) {
       return 0;
     }
-    c = a * b;
+    uint256 c = a * b;
     assert(c / a == b);
     return c;
   }
@@ -37,13 +41,13 @@ library SafeMath {
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
     // assert(b > 0); // Solidity automatically throws when dividing by 0
-    // uint256 c = a / b;
+    uint256 c = a / b;
     // assert(a == b * c + a % b); // There is no case in which this doesn't hold
-    return a / b;
+    return c;
   }
 
   /**
-  * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
+  * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
     assert(b <= a);
@@ -53,8 +57,8 @@ library SafeMath {
   /**
   * @dev Adds two numbers, throws on overflow.
   */
-  function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    c = a + b;
+  function add(uint256 a, uint256 b) internal pure returns (uint256) {
+    uint256 c = a + b;
     assert(c >= a);
     return c;
   }
@@ -68,7 +72,7 @@ contract ECRecovery {
    * @param hash bytes32 message, the hash is the signed message. What is recovered is the signer address.
    * @param sig bytes signature, the signature is generated using web3.eth.sign()
    */
-  function recover(bytes32 hash,   bytes memory sig) internal  pure returns (address) {
+  function recover(bytes32 hash, bytes memory sig) internal  pure returns (address) {
     bytes32 r;
     bytes32 s;
     uint8 v;
@@ -101,31 +105,22 @@ contract ECRecovery {
 }
 
 
+
 contract RelayAuthorityInterface {
     function getRelayAuthority() public returns (address);
 }
 
 
-contract ERC20Basic {
-  function totalSupply() public view returns (uint256);
-  function balanceOf(address who) public view returns (uint256);
-  function transfer(address to, uint256 value) public returns (bool);
-  event Transfer(address indexed from, address indexed to, uint256 value);
-}
+contract ERC20Interface {
+    function totalSupply() public view returns (uint);
+    function balanceOf(address tokenOwner) public view returns (uint balance);
+    function allowance(address tokenOwner, address spender) public view returns (uint remaining);
+    function transfer(address to, uint tokens) public returns (bool success);
+    function approve(address spender, uint tokens) public returns (bool success);
+    function transferFrom(address from, address to, uint tokens) public returns (bool success);
 
-contract ERC20 is ERC20Basic {
-  function allowance(address owner, address spender)
-    public view returns (uint256);
-
-  function transferFrom(address from, address to, uint256 value)
-    public returns (bool);
-
-  function approve(address spender, uint256 value) public returns (bool);
-  event Approval(
-    address indexed owner,
-    address indexed spender,
-    uint256 value
-  );
+    event Transfer(address indexed from, address indexed to, uint tokens);
+    event Approval(address indexed tokenOwner, address indexed spender, uint tokens);
 }
 
 
@@ -134,13 +129,12 @@ contract ApproveAndCallFallBack {
 }
 
 
-
-
 contract LavaToken is ECRecovery{
 
     using SafeMath for uint;
 
-    address public masterToken;
+
+    address constant public masterToken = 0x9D2Cc383E677292ed87f63586086CfF62a009010;
 
     string public name     = "Lava";
     string public symbol   = "LAVA";
@@ -180,7 +174,7 @@ contract LavaToken is ECRecovery{
       "LavaPacket(string methodName,address relayAuthority,address from,address to,address wallet,uint256 tokens,uint256 relayerRewardTokens,uint256 expires,uint256 nonce)"
   );
 
-     function getLavaPacketTypehash() public  pure returns (bytes32) {
+   function getLavaPacketTypehash() public pure returns (bytes32) {
       return LAVAPACKET_TYPEHASH;
   }
 
@@ -201,11 +195,17 @@ contract LavaToken is ECRecovery{
     }
 
 
-    constructor(address mToken) public
-    {
-      masterToken = mToken;
+    constructor() public {
+
     }
 
+    /**
+    * Do not allow Ether to enter
+    */
+     function() external payable
+     {
+         revert();
+     }
 
 
     /**
@@ -219,7 +219,7 @@ contract LavaToken is ECRecovery{
     {
         require( amount > 0 );
 
-        require( ERC20( masterToken ).transferFrom( from, address(this), amount) );
+        require( ERC20Interface( masterToken ).transferFrom( from, address(this), amount) );
 
         balances[from] = balances[from].add(amount);
         _totalSupply = _totalSupply.add(amount);
@@ -243,19 +243,12 @@ contract LavaToken is ECRecovery{
         balances[from] = balances[from].sub(amount);
         _totalSupply = _totalSupply.sub(amount);
 
-        require( ERC20( masterToken ).transferFrom( address(this), from, amount) );
+        require( ERC20Interface( masterToken ).transferFrom( address(this), from, amount) );
 
         return true;
     }
 
 
-   /**
-   * Do not allow Ether to enter
-   */
-    function() external payable
-    {
-        revert();
-    }
 
     function totalSupply() public view returns (uint) {
         return _totalSupply;
@@ -336,7 +329,7 @@ contract LavaToken is ECRecovery{
 
        uint burnedSignature = burnedSignatures[sigHash];
        burnedSignatures[sigHash] = 0x1; //spent
-       require(burnedSignature == 0x0 );
+       require(burnedSignature == 0x0);
 
        //approve the relayer reward
        allowance[packet.from][msg.sender] = packet.relayerRewardTokens;

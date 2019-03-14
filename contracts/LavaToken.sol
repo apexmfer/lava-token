@@ -272,8 +272,10 @@ contract LavaToken is ECRecovery{
 
   //standard ERC20 method
    function transferTokens(address to,  uint tokens) public returns (bool success) {
-
-        return transferTokensFrom(msg.sender, to, tokens);
+        balances[msg.sender] = balances[msg.sender].sub(tokens);
+        balances[to] = balances[to].add(tokens);
+        emit Transfer(msg.sender, to, tokens);
+        return true;
     }
 
 

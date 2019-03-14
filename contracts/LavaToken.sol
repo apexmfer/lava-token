@@ -245,7 +245,7 @@ contract LavaToken is ECRecovery{
         balances[from] = balances[from].sub(amount);
         _totalSupply = _totalSupply.sub(amount);
 
-        require( ERC20Interface( masterToken ).transferFrom( address(this), from, amount) );
+        require( ERC20Interface( masterToken ).transfer( from, amount) );
 
         return true;
     }
@@ -257,7 +257,7 @@ contract LavaToken is ECRecovery{
     }
 
 
-    function getAllowance(address owner, address spender) public returns (uint)
+    function getAllowance(address owner, address spender) public view returns (uint)
     {
       return allowance[owner][spender];
     }

@@ -286,6 +286,13 @@ contract LavaToken is ECRecovery{
        return true;
    }
 
+   function _giveRelayerReward( address from, address to, uint tokens) internal returns (bool success){
+     balances[from] = balances[from].sub(tokens);
+     balances[to] = balances[to].add(tokens);
+     emit Transfer( from, to, tokens);
+     return true;
+   }
+
 
 
 
@@ -334,12 +341,8 @@ contract LavaToken is ECRecovery{
        burnedSignatures[sigHash] = 0x1; //spent
        require(burnedSignature == 0x0);
 
-       //approve the relayer reward--CONSIDER NOT DOING THIS HERE - OVERWRITES
-       allowance[from][msg.sender] = relayerRewardTokens;
-       emit Approval(from, msg.sender, relayerRewardTokens);
-
-       //transferRelayerReward
-       require(transferTokensFrom(from, msg.sender,   relayerRewardTokens));
+       //relayer reward tokens, has nothing to do with allowance
+       require(_giveRelayerReward(from, msg.sender,   relayerRewardTokens));
 
        //approve transfer of tokens
        allowance[from][to] = tokens;

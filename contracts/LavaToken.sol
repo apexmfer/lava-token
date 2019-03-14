@@ -214,11 +214,12 @@ contract LavaToken is ECRecovery{
      *
      * @dev Deposit original tokens, receive proxy tokens 1:1
      *
-     * @param from  
+     *  
      * @param amount 
      */
-    function mutateTokens( address from, uint amount) public returns (bool)
-    {
+    function mutateTokens( uint amount) public returns (bool)
+    {   
+        address from = msg.sender;
         require( amount > 0 );
 
         require( ERC20Interface( masterToken ).transferFrom( from, address(this), amount) );
@@ -234,12 +235,13 @@ contract LavaToken is ECRecovery{
     /**
      * @dev Withdraw original tokens, burn proxy tokens 1:1
      *
-     * @param from  
+     *  
      *
      * @param amount 
      */
-    function unmutateTokens(  address from, uint amount) public returns (bool)
+    function unmutateTokens( uint amount) public returns (bool)
     {
+        address from = msg.sender;
         require( amount > 0 );
 
         balances[from] = balances[from].sub(amount);

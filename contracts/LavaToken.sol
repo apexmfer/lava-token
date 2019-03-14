@@ -256,7 +256,10 @@ contract LavaToken is ECRecovery{
         return _totalSupply;
     }
 
-
+     function balanceOf(address tokenOwner) public view returns (uint balance) {
+        return balances[tokenOwner];
+    }
+    
     function getAllowance(address owner, address spender) public view returns (uint)
     {
       return allowance[owner][spender];

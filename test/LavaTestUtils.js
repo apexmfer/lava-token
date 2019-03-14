@@ -81,7 +81,7 @@ function typedSignatureHash(typedData) {
     return hardcodedSchemaHash;
  }
 
- getLavaTypedDataHash(typedData,types)
+ static getLavaTypedDataHash(typedData,types)
  {
    var typedDataHash = ethUtil.sha3(
        Buffer.concat([
@@ -94,7 +94,7 @@ function typedSignatureHash(typedData) {
    return typedDataHash;
  }
 
- getLavaTypedDataFromParams(   methodName,relayAuthority,from,
+ static getLavaTypedDataFromParams(   methodName,relayAuthority,from,
    to,walletAddress,tokenAmount, relayerRewardTokens,expires,nonce )
  {
    const typedData = {
@@ -175,29 +175,36 @@ function typedSignatureHash(typedData) {
 
      static lavaPacketHasValidSignature(packetData){
 
-       var sigHash = LavaTestUtils.getLavaTypedDataHash(
-         packetData.methodName,
-          packetData.relayAuthority,
-          packetData.from,
-          packetData.to,
-          packetData.wallet,
-        //  packetData.token,
-          packetData.tokens,
-        //  packetData.relayerRewardToken,
-          packetData.relayerRewardTokens,
-          packetData.expires,
-          packetData.nonce);
+
+          var typedData = LavaTestUtils.getLavaTypedDataFromParams(
+            packetData.methodName,
+             packetData.relayAuthority,
+             packetData.from,
+             packetData.to,
+             packetData.wallet,
+           //  packetData.token,
+             packetData.tokens,
+           //  packetData.relayerRewardToken,
+             packetData.relayerRewardTokens,
+             packetData.expires,
+             packetData.nonce);
 
 
-       var msgBuf = ethjsutil.toBuffer(packetData.signature)
-       const res = ethjsutil.fromRpcSig(msgBuf);
+             const types = typedData.types;
+
+       //this is borked
+       var sigHash = LavaTestUtils.getLavaTypedDataHash(typedData,types);
 
 
-       var hashBuf = ethjsutil.toBuffer(sigHash)
+       var msgBuf = ethUtil.toBuffer(packetData.signature)
+       const res = ethUtil.fromRpcSig(msgBuf);
 
-       const pubKey  = ethjsutil.ecrecover(hashBuf, res.v, res.r, res.s);
-       const addrBuf = ethjsutil.pubToAddress(pubKey);
-       const recoveredSignatureSigner    = ethjsutil.bufferToHex(addrBuf);
+
+       var hashBuf = ethUtil.toBuffer(sigHash)
+
+       const pubKey  = ethUtil.ecrecover(hashBuf, res.v, res.r, res.s);
+       const addrBuf = ethUtil.pubToAddress(pubKey);
+       const recoveredSignatureSigner    = ethUtil.bufferToHex(addrBuf);
 
 
        //make sure the signer is the depositor of the tokens

@@ -213,13 +213,13 @@ contract LavaToken is ECRecovery{
     /**
      *
      * @dev Deposit original tokens, receive proxy tokens 1:1
-     *
+     * This method requires token approval.
      *  
      * @param amount 
      */
-    function mutateTokens( uint amount) public returns (bool)
+    function mutateTokens(address from, uint amount) public returns (bool)
     {   
-        address from = msg.sender;
+         
         require( amount > 0 );
 
         require( ERC20Interface( masterToken ).transferFrom( from, address(this), amount) );
@@ -251,7 +251,8 @@ contract LavaToken is ECRecovery{
 
         return true;
     }
-
+    
+      
 
 
     function totalSupply() public view returns (uint) {
@@ -429,8 +430,10 @@ contract LavaToken is ECRecovery{
          Receive approval to spend tokens and perform any action all in one transaction
        */
      function receiveApproval(address from, uint256 tokens, address token, bytes memory data) public returns (bool success) {
+        
         require(token == masterToken);
-        require(mutateTokens(from,tokens));
+        
+        require(mutateTokens(from, tokens));
 
         return true;
 

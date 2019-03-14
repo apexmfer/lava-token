@@ -380,7 +380,7 @@ contract LavaToken is ECRecovery{
       require(_tokenApprovalWithSignature(methodName,relayAuthority,from,to,wallet,tokens,relayerRewardTokens,expires,nonce,sigHash,signature));
 
       //it can be requested that fewer tokens be sent that were approved -- the whole approval will be invalidated though
-      require(transferTokensFrom( from, to,  tokens));
+      require(transferFrom( from, to,  tokens));
 
 
       return true;

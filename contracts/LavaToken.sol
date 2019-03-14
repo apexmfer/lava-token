@@ -128,7 +128,7 @@ contract ERC20Interface {
 
 
 contract ApproveAndCallFallBack {
-    function receiveApproval(address from, uint256 tokens,  bytes memory data) public;
+    function receiveApproval(address from, uint256 tokens, address token, bytes memory data) public;
 }
 
 
@@ -137,7 +137,7 @@ contract LavaToken is ECRecovery{
     using SafeMath for uint;
 
 
-    address constant public masterToken = 0x9D2Cc383E677292ed87f63586086CfF62a009010;
+    address constant public masterToken = 0x1Ed72F8092005f7Ac39b76e4902317bD0649AEE9;
 
     string public name     = "Lava";
     string public symbol   = "LAVA";
@@ -295,8 +295,6 @@ contract LavaToken is ECRecovery{
 
 
 
-
-
    function getLavaTypedDataHash(string memory methodName, address relayAuthority,address from,address to, address wallet,uint256 tokens,uint256 relayerRewardTokens,uint256 expires,uint256 nonce) public  pure returns (bytes32) {
 
 
@@ -319,7 +317,9 @@ contract LavaToken is ECRecovery{
         Always allow relaying a packet if the specified relayAuthority is 0.
         If the authority address is not a contract, allow it to relay
         If the authority address is a contract, allow its defined 'getAuthority()' delegate to relay
+
        */
+
 
        require( relayAuthority == address(0x0)
          || (!addressContainsContract(relayAuthority) && msg.sender == relayAuthority)
@@ -337,9 +337,9 @@ contract LavaToken is ECRecovery{
        //make sure the signature has not expired
        require(block.number < expires);
 
-       uint burnedSignature = burnedSignatures[sigHash];
+       uint previousBurnedSignatureValue = burnedSignatures[sigHash];
        burnedSignatures[sigHash] = 0x1; //spent
-       require(burnedSignature == 0x0);
+       require(previousBurnedSignatureValue == 0x0);
 
        //relayer reward tokens, has nothing to do with allowance
        require(_giveRelayerReward(from, msg.sender,   relayerRewardTokens));
@@ -421,9 +421,11 @@ contract LavaToken is ECRecovery{
        /*
          Receive approval to spend tokens and perform any action all in one transaction
        */
-     function receiveApproval(address from, uint256 tokens, bytes memory data) public returns (bool success) {
+     function receiveApproval(address from, uint256 tokens, address token, bytes memory data) public returns (bool success) {
+        require(token == masterToken);
+        require(mutateTokens(from,tokens));
 
-        return mutateTokens(from,tokens);
+        return true;
 
      }
 
@@ -438,15 +440,20 @@ contract LavaToken is ECRecovery{
 
 
       require(!bytesEqual('approve',bytes(methodName))
-      && !bytesEqual('transfer',bytes(methodName))  );
+      && !bytesEqual('transfer',bytes(methodName)));
 
         bytes32 sigHash = getLavaTypedDataHash(methodName,relayAuthority,from,to,wallet,tokens,relayerRewardTokens,expires,nonce);
 
         require(_tokenApprovalWithSignature(methodName,relayAuthority,from,to,wallet,tokens,relayerRewardTokens,expires,nonce,sigHash,signature));
 
-        ApproveAndCallFallBack(to).receiveApproval(from, tokens,  bytes(methodName));
+        _sendApproveAndCall(from,to,tokens,bytes(methodName));
 
         return true;
+     }
+
+     function _sendApproveAndCall(address from, address to, uint tokens, bytes memory methodName) internal
+     {
+         ApproveAndCallFallBack(to).receiveApproval(from, tokens, masterToken, bytes(methodName));
      }
 
 

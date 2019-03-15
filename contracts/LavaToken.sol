@@ -136,7 +136,7 @@ contract LavaToken is ECRecovery{
 
     using SafeMath for uint;
 
-    address constant public masterToken = 0xb6ed7644c69416d67b522e20bc294a9a9b405b31;
+    address constant public masterToken = 0xB6eD7644C69416d67B522e20bC294A9a9B405B31;
 
     string public name     = "Lava";
     string public symbol   = "LAVA";
@@ -398,6 +398,34 @@ contract LavaToken is ECRecovery{
       return true;
 
   }
+  
+  
+     /*
+      Approve LAVA tokens for a smart contract and call the contracts receiveApproval method in a single packet transaction.
+      
+      Uses the methodName as the 'bytes' for the fallback function to the remote contract
+
+      */
+     function approveAndCallWithSignature( string memory methodName, address relayAuthority,address from,address to, address wallet,uint256 tokens,uint256 relayerRewardTokens,uint256 expires,uint256 nonce, bytes memory signature ) public returns (bool success)   {
+ 
+          require(!bytesEqual('approve',bytes(methodName))  && !bytesEqual('transfer',bytes(methodName)));
+
+           //check to make sure that signature == ecrecover signature
+          bytes32 sigHash = getLavaTypedDataHash(methodName,relayAuthority,from,to,wallet,tokens,relayerRewardTokens,expires,nonce);
+
+          require(_tokenApprovalWithSignature(methodName,relayAuthority,from,to,wallet,tokens,relayerRewardTokens,expires,nonce,sigHash,signature));
+
+          _sendApproveAndCall(from,to,tokens,bytes(methodName));
+
+           return true;
+     }
+
+     function _sendApproveAndCall(address from, address to, uint tokens, bytes memory methodName) internal
+     {
+         ApproveAndCallFallBack(to).receiveApproval(from, tokens, masterToken, bytes(methodName));
+     }
+  
+  
 
     
     /*
@@ -455,30 +483,7 @@ contract LavaToken is ECRecovery{
 
      }
 
-     /*
-      Approve LAVA tokens for a smart contract and call the contracts receiveApproval method in a single packet transaction.
-      
-      Uses the methodName as the 'bytes' for the fallback function to the remote contract
-
-      */
-     function approveAndCallWithSignature( string memory methodName, address relayAuthority,address from,address to, address wallet,uint256 tokens,uint256 relayerRewardTokens,uint256 expires,uint256 nonce, bytes memory signature ) public returns (bool success)   {
- 
-      require(!bytesEqual('approve',bytes(methodName))
-      && !bytesEqual('transfer',bytes(methodName)));
-
-        bytes32 sigHash = getLavaTypedDataHash(methodName,relayAuthority,from,to,wallet,tokens,relayerRewardTokens,expires,nonce);
-
-        require(_tokenApprovalWithSignature(methodName,relayAuthority,from,to,wallet,tokens,relayerRewardTokens,expires,nonce,sigHash,signature));
-
-        _sendApproveAndCall(from,to,tokens,bytes(methodName));
-
-        return true;
-     }
-
-     function _sendApproveAndCall(address from, address to, uint tokens, bytes memory methodName) internal
-     {
-         ApproveAndCallFallBack(to).receiveApproval(from, tokens, masterToken, bytes(methodName));
-     }
+  
 
 
      function addressContainsContract(address _to) view internal returns (bool)

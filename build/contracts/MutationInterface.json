@@ -1,146 +1,14 @@
 {
-  "contractName": "ERC20Interface",
+  "contractName": "MutationInterface",
   "abi": [
     {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "name": "from",
-          "type": "address"
-        },
-        {
-          "indexed": true,
-          "name": "to",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "name": "tokens",
-          "type": "uint256"
-        }
-      ],
-      "name": "Transfer",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "name": "tokenOwner",
-          "type": "address"
-        },
-        {
-          "indexed": true,
-          "name": "spender",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "name": "tokens",
-          "type": "uint256"
-        }
-      ],
-      "name": "Approval",
-      "type": "event"
-    },
-    {
-      "constant": true,
+      "constant": false,
       "inputs": [],
-      "name": "totalSupply",
+      "name": "masterToken",
       "outputs": [
         {
           "name": "",
-          "type": "uint256"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "tokenOwner",
           "type": "address"
-        }
-      ],
-      "name": "balanceOf",
-      "outputs": [
-        {
-          "name": "balance",
-          "type": "uint256"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "tokenOwner",
-          "type": "address"
-        },
-        {
-          "name": "spender",
-          "type": "address"
-        }
-      ],
-      "name": "allowance",
-      "outputs": [
-        {
-          "name": "remaining",
-          "type": "uint256"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "to",
-          "type": "address"
-        },
-        {
-          "name": "tokens",
-          "type": "uint256"
-        }
-      ],
-      "name": "transfer",
-      "outputs": [
-        {
-          "name": "success",
-          "type": "bool"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "spender",
-          "type": "address"
-        },
-        {
-          "name": "tokens",
-          "type": "uint256"
-        }
-      ],
-      "name": "approve",
-      "outputs": [
-        {
-          "name": "success",
-          "type": "bool"
         }
       ],
       "payable": false,
@@ -155,18 +23,33 @@
           "type": "address"
         },
         {
-          "name": "to",
-          "type": "address"
-        },
-        {
-          "name": "tokens",
+          "name": "amount",
           "type": "uint256"
         }
       ],
-      "name": "transferFrom",
+      "name": "mutateTokens",
       "outputs": [
         {
-          "name": "success",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "unmutateTokens",
+      "outputs": [
+        {
+          "name": "",
           "type": "bool"
         }
       ],
@@ -5187,12 +5070,11 @@
   },
   "networks": {},
   "schemaVersion": "3.0.3",
-  "updatedAt": "2019-03-15T16:50:23.383Z",
+  "updatedAt": "2019-03-15T16:50:23.361Z",
   "devdoc": {
     "methods": {}
   },
   "userdoc": {
-    "methods": {},
-    "notice": "------------------------------------ LAVA Token Demutator This is a Lava Middleman contract that can be the target of Lava Packets for ApproveAndCall. This will unmutate lava tokens back to the master token. ------------------------------------"
+    "methods": {}
   }
 }

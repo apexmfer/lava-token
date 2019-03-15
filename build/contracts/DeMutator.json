@@ -1,134 +1,26 @@
 {
-  "contractName": "ERC20Interface",
+  "contractName": "DeMutator",
   "abi": [
     {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "name": "from",
-          "type": "address"
-        },
-        {
-          "indexed": true,
-          "name": "to",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "name": "tokens",
-          "type": "uint256"
-        }
-      ],
-      "name": "Transfer",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "name": "tokenOwner",
-          "type": "address"
-        },
-        {
-          "indexed": true,
-          "name": "spender",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "name": "tokens",
-          "type": "uint256"
-        }
-      ],
-      "name": "Approval",
-      "type": "event"
-    },
-    {
-      "constant": true,
       "inputs": [],
-      "name": "totalSupply",
-      "outputs": [
-        {
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "tokenOwner",
-          "type": "address"
-        }
-      ],
-      "name": "balanceOf",
-      "outputs": [
-        {
-          "name": "balance",
-          "type": "uint256"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "tokenOwner",
-          "type": "address"
-        },
-        {
-          "name": "spender",
-          "type": "address"
-        }
-      ],
-      "name": "allowance",
-      "outputs": [
-        {
-          "name": "remaining",
-          "type": "uint256"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "to",
-          "type": "address"
-        },
-        {
-          "name": "tokens",
-          "type": "uint256"
-        }
-      ],
-      "name": "transfer",
-      "outputs": [
-        {
-          "name": "success",
-          "type": "bool"
-        }
-      ],
       "payable": false,
       "stateMutability": "nonpayable",
-      "type": "function"
+      "type": "constructor"
+    },
+    {
+      "payable": true,
+      "stateMutability": "payable",
+      "type": "fallback"
     },
     {
       "constant": false,
       "inputs": [
         {
-          "name": "spender",
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "name": "token",
           "type": "address"
         },
         {
@@ -136,7 +28,7 @@
           "type": "uint256"
         }
       ],
-      "name": "approve",
+      "name": "demutateTokens",
       "outputs": [
         {
           "name": "success",
@@ -155,15 +47,19 @@
           "type": "address"
         },
         {
-          "name": "to",
+          "name": "tokens",
+          "type": "uint256"
+        },
+        {
+          "name": "token",
           "type": "address"
         },
         {
-          "name": "tokens",
-          "type": "uint256"
+          "name": "data",
+          "type": "bytes"
         }
       ],
-      "name": "transferFrom",
+      "name": "receiveApproval",
       "outputs": [
         {
           "name": "success",
@@ -175,10 +71,10 @@
       "type": "function"
     }
   ],
-  "bytecode": "0x",
-  "deployedBytecode": "0x",
-  "sourceMap": "",
-  "deployedSourceMap": "",
+  "bytecode": "0x608060405234801561001057600080fd5b506105c9806100206000396000f3fe60806040526004361061004c576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680638f4ffcb114610051578063a8b6af011461017b575b600080fd5b34801561005d57600080fd5b506101616004803603608081101561007457600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff16906020019092919080359060200190929190803573ffffffffffffffffffffffffffffffffffffffff169060200190929190803590602001906401000000008111156100db57600080fd5b8201836020820111156100ed57600080fd5b8035906020019184600183028401116401000000008311171561010f57600080fd5b91908080601f016020809104026020016040519081016040528093929190818152602001838380828437600081840152601f19601f82011690508083019250505050505050919291929050505061020e565b604051808215151515815260200191505060405180910390f35b34801561018757600080fd5b506101f46004803603606081101561019e57600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190803573ffffffffffffffffffffffffffffffffffffffff16906020019092919080359060200190929190505050610232565b604051808215151515815260200191505060405180910390f35b600061021b858486610232565b151561022657600080fd5b60019050949350505050565b6000808373ffffffffffffffffffffffffffffffffffffffff16632bb5e31e6040518163ffffffff167c0100000000000000000000000000000000000000000000000000000000028152600401602060405180830381600087803b15801561029957600080fd5b505af11580156102ad573d6000803e3d6000fd5b505050506040513d60208110156102c357600080fd5b810190808051906020019092919050505090508373ffffffffffffffffffffffffffffffffffffffff166323b872dd8630866040518463ffffffff167c0100000000000000000000000000000000000000000000000000000000028152600401808473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020018373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020018281526020019350505050602060405180830381600087803b1580156103ad57600080fd5b505af11580156103c1573d6000803e3d6000fd5b505050506040513d60208110156103d757600080fd5b810190808051906020019092919050505015156103f357600080fd5b8373ffffffffffffffffffffffffffffffffffffffff1663c5e6d8e0846040518263ffffffff167c010000000000000000000000000000000000000000000000000000000002815260040180828152602001915050602060405180830381600087803b15801561046257600080fd5b505af1158015610476573d6000803e3d6000fd5b505050506040513d602081101561048c57600080fd5b810190808051906020019092919050505015156104a857600080fd5b8073ffffffffffffffffffffffffffffffffffffffff1663a9059cbb86856040518363ffffffff167c0100000000000000000000000000000000000000000000000000000000028152600401808373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200182815260200192505050602060405180830381600087803b15801561054b57600080fd5b505af115801561055f573d6000803e3d6000fd5b505050506040513d602081101561057557600080fd5b8101908080519060200190929190505050151561059157600080fd5b6001915050939250505056fea165627a7a723058205c7630abcc7ce07a2fbcef8e3990a2c40d9927319e074f03f4f8d5c50df781200029",
+  "deployedBytecode": "0x60806040526004361061004c576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680638f4ffcb114610051578063a8b6af011461017b575b600080fd5b34801561005d57600080fd5b506101616004803603608081101561007457600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff16906020019092919080359060200190929190803573ffffffffffffffffffffffffffffffffffffffff169060200190929190803590602001906401000000008111156100db57600080fd5b8201836020820111156100ed57600080fd5b8035906020019184600183028401116401000000008311171561010f57600080fd5b91908080601f016020809104026020016040519081016040528093929190818152602001838380828437600081840152601f19601f82011690508083019250505050505050919291929050505061020e565b604051808215151515815260200191505060405180910390f35b34801561018757600080fd5b506101f46004803603606081101561019e57600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190803573ffffffffffffffffffffffffffffffffffffffff16906020019092919080359060200190929190505050610232565b604051808215151515815260200191505060405180910390f35b600061021b858486610232565b151561022657600080fd5b60019050949350505050565b6000808373ffffffffffffffffffffffffffffffffffffffff16632bb5e31e6040518163ffffffff167c0100000000000000000000000000000000000000000000000000000000028152600401602060405180830381600087803b15801561029957600080fd5b505af11580156102ad573d6000803e3d6000fd5b505050506040513d60208110156102c357600080fd5b810190808051906020019092919050505090508373ffffffffffffffffffffffffffffffffffffffff166323b872dd8630866040518463ffffffff167c0100000000000000000000000000000000000000000000000000000000028152600401808473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020018373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020018281526020019350505050602060405180830381600087803b1580156103ad57600080fd5b505af11580156103c1573d6000803e3d6000fd5b505050506040513d60208110156103d757600080fd5b810190808051906020019092919050505015156103f357600080fd5b8373ffffffffffffffffffffffffffffffffffffffff1663c5e6d8e0846040518263ffffffff167c010000000000000000000000000000000000000000000000000000000002815260040180828152602001915050602060405180830381600087803b15801561046257600080fd5b505af1158015610476573d6000803e3d6000fd5b505050506040513d602081101561048c57600080fd5b810190808051906020019092919050505015156104a857600080fd5b8073ffffffffffffffffffffffffffffffffffffffff1663a9059cbb86856040518363ffffffff167c0100000000000000000000000000000000000000000000000000000000028152600401808373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200182815260200192505050602060405180830381600087803b15801561054b57600080fd5b505af115801561055f573d6000803e3d6000fd5b505050506040513d602081101561057557600080fd5b8101908080519060200190929190505050151561059157600080fd5b6001915050939250505056fea165627a7a723058205c7630abcc7ce07a2fbcef8e3990a2c40d9927319e074f03f4f8d5c50df781200029",
+  "sourceMap": "1331:1160:0:-;;;1357:29;8:9:-1;5:2;;;30:1;27;20:12;5:2;1357:29:0;1331:1160;;;;;;",
+  "deployedSourceMap": "1331:1160:0:-;;;;;;;;;;;;;;;;;;;;;;;;;;1484:8;;;2275:205;;8:9:-1;5:2;;;30:1;27;20:12;5:2;2275:205:0;;;;;;13:3:-1;8;5:12;2:2;;;30:1;27;20:12;2:2;2275:205:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;21:11:-1;8;5:28;2:2;;;46:1;43;36:12;2:2;2275:205:0;;35:9:-1;28:4;12:14;8:25;5:40;2:2;;;58:1;55;48:12;2:2;2275:205:0;;;;;;100:9:-1;95:1;81:12;77:20;67:8;63:35;60:50;39:11;25:12;22:29;11:107;8:2;;;131:1;128;121:12;8:2;2275:205:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;30:3:-1;22:6;14;1:33;99:1;93:3;85:6;81:16;74:27;137:4;133:9;126:4;121:3;117:14;113:30;106:37;;169:3;161:6;157:16;147:26;;2275:205:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1507:588;;8:9:-1;5:2;;;30:1;27;20:12;5:2;1507:588:0;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;1507:588:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2275:205;2380:12;2413:35;2429:4;2434:5;2440:6;2413:14;:35::i;:::-;2405:44;;;;;;;;2467:4;2460:11;;2275:205;;;;;;:::o;1507:588::-;1589:12;1616:19;1656:5;1638:36;;;:38;;;;;;;;;;;;;;;;;;;;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;1638:38:0;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;1638:38:0;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;1638:38:0;;;;;;;;;;;;;;;;1616:60;;1783:5;1768:34;;;1803:4;1817;1824:6;1768:64;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;1768:64:0;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;1768:64:0;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;1768:64:0;;;;;;;;;;;;;;;;1760:73;;;;;;;;1926:5;1908:39;;;1948:6;1908:47;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;1908:47:0;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;1908:47:0;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;1908:47:0;;;;;;;;;;;;;;;;1900:56;;;;;;;;2027:11;2012:36;;;2049:4;2055:6;2012:51;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;2012:51:0;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;2012:51:0;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;2012:51:0;;;;;;;;;;;;;;;;2004:60;;;;;;;;2083:4;2076:11;;;1507:588;;;;;:::o",
   "source": "pragma solidity ^0.5.0;\n\n\n\n/**------------------------------------\n\nLAVA Token Demutator\n\nThis is a Lava Middleman contract that can be the target of Lava Packets for ApproveAndCall.\n\nThis will unmutate lava tokens back to the master token.\n\n\n------------------------------------*/\n\n\n\ncontract ERC20Interface {\n    function totalSupply() public view returns (uint);\n    function balanceOf(address tokenOwner) public view returns (uint balance);\n    function allowance(address tokenOwner, address spender) public view returns (uint remaining);\n    function transfer(address to, uint tokens) public returns (bool success);\n    function approve(address spender, uint tokens) public returns (bool success);\n    function transferFrom(address from, address to, uint tokens) public returns (bool success);\n\n    event Transfer(address indexed from, address indexed to, uint tokens);\n    event Approval(address indexed tokenOwner, address indexed spender, uint tokens);\n}\n\ncontract MutationInterface {\n    function masterToken() public returns (address);\n\n    function mutateTokens(address from, uint amount) public returns (bool);\n    function unmutateTokens( uint amount) public returns (bool);\n}\n\n\ncontract ApproveAndCallFallBack {\n    function receiveApproval(address from, uint256 tokens, address token, bytes memory data) public;\n}\n\n\ncontract DeMutator{\n\n\n    constructor() public {\n\n    }\n\n    /**\n    * Do not allow ETH to enter\n    */\n     function() external payable\n     {\n         revert();\n     }\n\n\n    function demutateTokens(address from, address token, uint tokens) public returns (bool success) {\n\n          address masterToken = MutationInterface(token).masterToken();\n\n          //bring the preapproved tokens into the contracts possession\n          require(ERC20Interface(token).transferFrom(from, address(this), tokens ));\n\n          //mutate the tokens to the masterToken type\n          require(MutationInterface(token).unmutateTokens(tokens));\n\n          //send them to the owner\n          require(ERC20Interface(masterToken).transfer(from, tokens ));\n\n         return true;\n     }\n\n       /*\n         Receive approval from ApproveAndCall() to mutate tokens.\n\n         This method allows 0xBTC to be mutated into LAVA using a single method call.\n       */\n     function receiveApproval(address from, uint256 tokens, address token, bytes memory data) public returns (bool success) {\n\n        require(demutateTokens( from,token,tokens ));\n\n        return true;\n\n     }\n\n\n\n\n\n\n\n\n\n}\n",
   "sourcePath": "/home/andy/dev/lava-token/contracts/DeMutator.sol",
   "ast": {
@@ -5187,12 +5083,11 @@
   },
   "networks": {},
   "schemaVersion": "3.0.3",
-  "updatedAt": "2019-03-15T16:50:23.383Z",
+  "updatedAt": "2019-03-15T16:50:23.360Z",
   "devdoc": {
     "methods": {}
   },
   "userdoc": {
-    "methods": {},
-    "notice": "------------------------------------ LAVA Token Demutator This is a Lava Middleman contract that can be the target of Lava Packets for ApproveAndCall. This will unmutate lava tokens back to the master token. ------------------------------------"
+    "methods": {}
   }
 }

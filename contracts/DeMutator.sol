@@ -56,7 +56,7 @@ contract DeMutator{
      }
 
 
-    function demutateTokens(address from, address token, uint tokens) public returns (bool success) {
+    function _demutateTokens(address from, address token, uint tokens) internal returns (bool success) {
 
           address masterToken = MutationInterface(token).masterToken();
 

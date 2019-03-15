@@ -443,14 +443,12 @@ contract LavaToken is ECRecovery{
 
      /*
       Approve lava tokens for a smart contract and call the contracts receiveApproval method all in one fell swoop
-
+      
+      Uses the methodName as the 'bytes' for the fallback function to the remote contract
 
       */
-     function approveAndCall( string memory methodName, address relayAuthority,address from,address to, address wallet,uint256 tokens,uint256 relayerRewardTokens,uint256 expires,uint256 nonce, bytes memory signature ) public returns (bool success)   {
-
-      // address from, address to, address token, uint256 tokens, uint256 relayerReward,  uint256 expires, uint256 nonce
-
-
+     function approveAndCallWithSignature( string memory methodName, address relayAuthority,address from,address to, address wallet,uint256 tokens,uint256 relayerRewardTokens,uint256 expires,uint256 nonce, bytes memory signature ) public returns (bool success)   {
+ 
       require(!bytesEqual('approve',bytes(methodName))
       && !bytesEqual('transfer',bytes(methodName)));
 

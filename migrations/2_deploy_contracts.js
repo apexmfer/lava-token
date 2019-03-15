@@ -10,6 +10,8 @@ var _0xBitcoinToken = artifacts.require("./_0xBitcoinToken.sol");
 
 var LavaToken = artifacts.require("./LavaToken.sol");
 
+var DeMutator = artifacts.require("./DeMutator.sol");
+
 //var DoubleKingsReward = artifacts.require("./DoubleKingsReward.sol")
 
 module.exports = function(deployer) {
@@ -23,6 +25,9 @@ module.exports = function(deployer) {
   return deployer.deploy(_0xBitcoinToken).then(function(){
     console.log('deploy 1 ')
 
+    return deployer.deploy(DeMutator).then(function(){
+      console.log('deploy 2 ')
+
 
             return deployer.deploy(LavaToken).then(function(){
                 console.log('deploy 3 ',  LavaToken.address)
@@ -30,6 +35,7 @@ module.exports = function(deployer) {
           });
 
 
+      });
   });
 
   //  deployer.deploy(miningKing);

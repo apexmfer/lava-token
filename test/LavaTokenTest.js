@@ -33,6 +33,7 @@ contract("LavaToken", (accounts) => {
 
   var lavaContract ;
   var tokenContract;
+  var demutatorContract;
   //var kingContract;
 //  var mintHelperContract;
 //  var doubleKingsRewardContract;
@@ -42,6 +43,8 @@ contract("LavaToken", (accounts) => {
   it("can deploy ", async function () {
     lavaContract = getInstance("LavaToken")
     tokenContract = getInstance("_0xBitcoinToken")
+
+    demutatorContract = getInstance("DeMutator")
   //  kingContract = getInstance("MiningKing")
   //  mintHelperContract = getInstance("MintHelper")
   //  miningDelegateContract = getInstance("MiningDelegate")
@@ -670,6 +673,220 @@ contract("LavaToken", (accounts) => {
                          assert.equal( burnStatus  , 0x1); //initialized
 
                     });
+
+
+
+
+
+                    it("can approveAndCallTokensWithSignature ", async function () {
+
+
+                        await printBalance(test_account.address,tokenContract)
+
+
+
+
+                        var addressFrom = test_account.address;
+
+                        //var msg = '0x8CbaC5e4d803bE2A3A5cd3DbE7174504c6DD0c1C'
+                        var requestRecipient = test_account.address;
+                        var requestQuantity = 500;
+
+
+
+
+                        /*
+                        SIGNING A LAVA PACKET
+                        */
+
+                         var requestNonce = web3utils.randomHex(32);
+
+
+                         var methodname = 'demutate'
+                         var relayAuthority = relayAuthorityAddress
+                         var from = test_account.address
+                         var to = demutatorContract.options.address
+                         var walletAddress=lavaContract.options.address
+                         var tokenAmount= 0
+                         var relayerReward=0 //1000000
+                         var expires=336504400
+                         var nonce='0xc18f687c56f1b2749af7d6151fa351'
+                         //var expectedSignature="0x8ef27391a81f77244bf95df58737eecac386ab9a47acd21bdb63757adf71ddf878169c18e4ab7b71d60f333c870258a0644ac7ade789d59c53b0ab75dbcc87d11b"
+
+                          //add new code here !!
+
+                         var typedData = LavaTestUtils.getLavaTypedDataFromParams(
+                           methodname,
+                           relayAuthority,
+                           from,
+                           to,
+                           walletAddress,
+                           tokenAmount,
+                           relayerReward,
+                           expires,
+                           nonce);
+
+
+                            const types = typedData.types;
+
+
+                            var msgHash = LavaTestUtils.getLavaTypedDataHash(typedData,types);
+
+                            var privateKey = test_account.privateKey;
+
+                           var privKey = Buffer.from(privateKey, 'hex')
+
+                          const sig = ethUtil.ecsign(msgHash , privKey );
+                          var signature = ethUtil.toRpcSig(sig.v,sig.r,sig.s);
+
+                          console.log('@@ lavaContract',  lavaContract.address)
+
+
+                          var lavaPacketStruct =   typedData.packet
+                          console.log('  lavaPacketStruct   ',   lavaPacketStruct  )
+
+
+                            console.log('  lavaContract.methods   ',   lavaContract.methods  )
+
+
+                        ///msg hash signed is 0x9201073a01df85b87dab83ad2498bf5b2190bf62cb03b2a407ba7d77279a4ceb
+                      //  var lavaMsgHash = await lavaContract.methods.getLavaTypedDataHash('approve', tuple ).send()
+                        //console.log('lavaMsgHash',lavaMsgHash)
+
+                        var lavaMsgHash = await lavaContract.methods.getLavaTypedDataHash(
+                          methodname,
+                          relayAuthority,
+                          from,
+                          to,
+                          walletAddress,
+                          tokenAmount,
+                          relayerReward,
+                          expires,
+                          nonce ).call({from: test_account.address})
+
+                          console.log('lavaMsgHash',lavaMsgHash)
+
+                        assert.equal(lavaMsgHash, '0x'+ msgHash.toString('hex') );
+
+
+
+
+
+                        var txData = web3.eth.abi.encodeFunctionCall({
+                                name: 'approveAndCallWithSignature',
+                                type: 'function',
+                                payable: false,
+                                stateMutability: "nonpayable",
+                                "inputs": [
+                                  {
+                                    "name": "methodName",
+                                    "type": "string"
+                                  },
+                                  {
+                                    "name": "relayAuthority",
+                                    "type": "address"
+                                  },
+                                  {
+                                    "name": "from",
+                                    "type": "address"
+                                  },
+                                  {
+                                    "name": "to",
+                                    "type": "address"
+                                  },
+                                  {
+                                    "name": "wallet",
+                                    "type": "address"
+                                  },
+                                  {
+                                    "name": "tokens",
+                                    "type": "uint256"
+                                  },
+                                  {
+                                    "name": "relayerRewardTokens",
+                                    "type": "uint256"
+                                  },
+                                  {
+                                    "name": "expires",
+                                    "type": "uint256"
+                                  },
+                                  {
+                                    "name": "nonce",
+                                    "type": "uint256"
+                                  },
+                                  {
+                                    "name": "signature",
+                                    "type": "bytes"
+                                  }
+                                ],
+                                  outputs: [
+                                    {
+                                      "name": "success",
+                                      "type": "bool"
+                                    }
+                                ]
+
+
+                          }, [methodname,
+                            relayAuthority,
+                            from,
+                            to,
+                            walletAddress,
+                            tokenAmount,
+                            relayerReward,
+                            expires,
+                            nonce,
+                            signature]);
+
+
+                          try{
+                              var txCount = await web3.eth.getTransactionCount(addressFrom);
+                              console.log('txCount',txCount)
+                             } catch(error) {  //here goes if someAsyncPromise() rejected}
+                              console.log(error);
+
+                               return error;    //this will result in a resolved promise.
+                             }
+
+                             var addressTo = lavaContract.address;
+                             var privateKey = test_account.privateKey;
+
+                            const txOptions = {
+                              nonce: web3utils.toHex(txCount),
+                              gas: web3utils.toHex("1704624"),
+                              gasPrice: web3utils.toHex(web3utils.toWei("4", 'gwei') ),
+                              value: 0,
+                              to: addressTo,
+                              from: addressFrom,
+                          //    data: txData
+                            }
+
+
+                            var result2 = await lavaContract.methods.approveAndCallWithSignature(
+                                methodname,
+                                relayAuthority,
+                                from,
+                                to,
+                                walletAddress,
+                                tokenAmount,
+                                relayerReward,
+                                expires,
+                                nonce,
+                                signature
+                               ).send(txOptions, (error, txhash) => {
+                                  console.log('meep',error,txhash)
+                                });
+
+
+                          //  var allowance = await lavaContract.methods.getAllowance(from,to).call();
+
+                          //  assert.equal( allowance  , tokenAmount);
+
+                            var burnStatus = await lavaContract.methods.signatureHashBurnStatus(lavaMsgHash).call();
+
+                           assert.equal( burnStatus  , 0x1); //initialized
+
+                      });
 
 
 

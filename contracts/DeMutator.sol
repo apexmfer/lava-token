@@ -28,7 +28,8 @@ contract ERC20Interface {
 }
 
 contract MutationInterface {
-    function masterToken() public returns (address);
+
+    address public masterToken;
 
     function mutateTokens(address from, uint amount) public returns (bool);
     function unmutateTokens( uint amount) public returns (bool);
@@ -56,9 +57,11 @@ contract DeMutator{
      }
 
 
+
+
     function _demutateTokens(address from, address token, uint tokens) internal returns (bool success) {
 
-          address masterToken = MutationInterface(token).masterToken();
+         address masterToken = MutationInterface(token).masterToken();
 
           //bring the preapproved tokens into the contracts possession
           require(ERC20Interface(token).transferFrom(from, address(this), tokens ));
@@ -84,8 +87,6 @@ contract DeMutator{
         return true;
 
      }
-
-
 
 
 

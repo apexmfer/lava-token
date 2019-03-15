@@ -665,7 +665,7 @@ contract("LavaToken", (accounts) => {
 
                           assert.equal( allowance  , tokenAmount);
 
-                          var burnStatus = await lavaContract.methods.signatureBurnStatus(lavaMsgHash).call();
+                          var burnStatus = await lavaContract.methods.signatureHashBurnStatus(lavaMsgHash).call();
 
                          assert.equal( burnStatus  , 0x1); //initialized
 

@@ -6,7 +6,7 @@ pragma solidity ^0.5.0;
 
 LAVA Token  (0xBTC Token Proxy with Lava Enabled)
 
-This is a 0xBTC proxy token contract.  Deposit your 0xBTC in this contract to receive LAVA tokens.
+This is a 0xBTC proxy token contract.  ApproveAndCall() your 0xBTC to this contract to receive LAVA tokens. Alternatively, approve() your 0xBTC to this contract and then call the mutateTokens() method. Do not directly transfer 0xBTC to this contract.
 
 LAVA tokens can be spent not just by your address, but by anyone as long as they have an ECRecovery signature, signed by your private key, which validates that specific transaction.
 
@@ -136,8 +136,7 @@ contract LavaToken is ECRecovery{
 
     using SafeMath for uint;
 
-
-    address constant public masterToken = 0x1Ed72F8092005f7Ac39b76e4902317bD0649AEE9;
+    address constant public masterToken = 0xb6ed7644c69416d67b522e20bc294a9a9b405b31;
 
     string public name     = "Lava";
     string public symbol   = "LAVA";
@@ -152,22 +151,19 @@ contract LavaToken is ECRecovery{
     mapping (address => uint)                       public  balances;
     mapping (address => mapping (address => uint))  public  allowance;
 
-
-
-   mapping(bytes32 => uint256) public burnedSignatures;
-
+    mapping (bytes32 => uint256)                    public burnedSignatures;
 
 
   struct LavaPacket {
-    string methodName;
+    string methodName; //approve, transfer, or a custom data byte32 for ApproveAndCall()
     address relayAuthority; //either a contract or an account
-    address from;
-    address to;
+    address from; //the packet origin and signer
+    address to; //the recipient of tokens
     address wallet;  //this contract address
-    uint256 tokens;
-    uint256 relayerRewardTokens;
-    uint256 expires;
-    uint256 nonce;
+    uint256 tokens; //the amount of tokens to give to the recipient
+    uint256 relayerRewardTokens; //the amount of tokens to give to msg.sender
+    uint256 expires; //the eth block number this packet expires at 
+    uint256 nonce; //a random number to ensure that packet hashes are always unique (optional)
   }
 
 
@@ -211,7 +207,6 @@ contract LavaToken is ECRecovery{
 
 
     /**
-     *
      * @dev Deposit original tokens, receive proxy tokens 1:1
      * This method requires token approval.
      *  
@@ -254,15 +249,17 @@ contract LavaToken is ECRecovery{
     
       
 
-
+   //standard ERC20 method
     function totalSupply() public view returns (uint) {
         return _totalSupply;
     }
-
+  
+   //standard ERC20 method
      function balanceOf(address tokenOwner) public view returns (uint balance) {
         return balances[tokenOwner];
     }
     
+     //standard ERC20 method
     function getAllowance(address owner, address spender) public view returns (uint)
     {
       return allowance[owner][spender];
@@ -293,7 +290,8 @@ contract LavaToken is ECRecovery{
        emit Transfer( from, to, tokens);
        return true;
    }
-
+  
+  //internal method for transferring tokens to the relayer reward as incentive for submitting the packet
    function _giveRelayerReward( address from, address to, uint tokens) internal returns (bool success){
      balances[from] = balances[from].sub(tokens);
      balances[to] = balances[to].add(tokens);
@@ -302,7 +300,10 @@ contract LavaToken is ECRecovery{
    }
 
 
-
+    /*      
+        Read-only method that returns the EIP712 message structure to be signed for a lava packet.
+    */
+    
    function getLavaTypedDataHash(string memory methodName, address relayAuthority,address from,address to, address wallet,uint256 tokens,uint256 relayerRewardTokens,uint256 expires,uint256 nonce) public  pure returns (bytes32) {
 
 
@@ -317,6 +318,9 @@ contract LavaToken is ECRecovery{
 
 
 
+    /*      
+        The internal method for processing the internal data structure of an offchain lava packet with signature.
+    */
 
    function _tokenApprovalWithSignature(  string memory methodName, address relayAuthority,address from,address to, address wallet,uint256 tokens,uint256 relayerRewardTokens,uint256 expires,uint256 nonce, bytes32 sigHash, bytes memory signature) internal returns (bool success)
    {
@@ -395,7 +399,11 @@ contract LavaToken is ECRecovery{
 
   }
 
-
+    
+    /*
+      Burn the signature of an off-chain transaction packet so that it cannot be used on-chain.
+      Only the creator of the packet can call this method as msg.sender.
+    */
 
      function burnSignature( string memory methodName, address relayAuthority,address from,address to, address wallet,uint256 tokens,uint256 relayerRewardTokens,uint256 expires,uint256 nonce,  bytes memory signature) public returns (bool success)
      {
@@ -419,8 +427,12 @@ contract LavaToken is ECRecovery{
          return true;
      }
 
-
-     function signatureBurnStatus(bytes32 digest) public view returns (uint)
+  
+    /*
+      Check the burn status of the SHA3 hash of a packet signature.
+      Signatures are burned whenever they are used for a transaction or whenever the burnSignature() method is called.
+    */
+     function signatureHashBurnStatus(bytes32 digest) public view returns (uint)
      {
        return (burnedSignatures[digest]);
      }
@@ -429,7 +441,9 @@ contract LavaToken is ECRecovery{
 
 
        /*
-         Receive approval to spend tokens and perform any action all in one transaction
+         Receive approval from ApproveAndCall() to mutate tokens.
+         
+         This method allows 0xBTC to be mutated into LAVA using a single method call.
        */
      function receiveApproval(address from, uint256 tokens, address token, bytes memory data) public returns (bool success) {
         
@@ -442,7 +456,7 @@ contract LavaToken is ECRecovery{
      }
 
      /*
-      Approve lava tokens for a smart contract and call the contracts receiveApproval method all in one fell swoop
+      Approve LAVA tokens for a smart contract and call the contracts receiveApproval method in a single packet transaction.
       
       Uses the methodName as the 'bytes' for the fallback function to the remote contract
 
@@ -465,7 +479,6 @@ contract LavaToken is ECRecovery{
      {
          ApproveAndCallFallBack(to).receiveApproval(from, tokens, masterToken, bytes(methodName));
      }
-
 
 
      function addressContainsContract(address _to) view internal returns (bool)

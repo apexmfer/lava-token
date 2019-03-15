@@ -6,16 +6,16 @@ pragma solidity ^0.5.0;
 
 LAVA Token  (0xBTC Token Proxy with Lava Enabled)
 
-This is a 0xBTC proxy token contract.  ApproveAndCall() your 0xBTC to this contract to receive LAVA tokens. Alternatively, approve() your 0xBTC to this contract and then call the mutateTokens() method. Do not directly transfer 0xBTC to this contract.
+0xBTC proxy token contract.  ApproveAndCall() 0xBTC to this contract to receive LAVA tokens. Alternatively, Approve() 0xBTC to this contract and then call the mutateTokens() method. Do not directly transfer 0xBTC to this contract using Transfer() or TransferFrom().
 
-LAVA tokens can be spent not just by your address, but by anyone as long as they have an ECRecovery signature, signed by your private key, which validates that specific transaction.
+LAVA tokens can be spent not just by your account, but by any account as long as they have a lava packet signature, signed by your private key, which validates that specific transaction.
 
 A relayer reward can be specified in a signed packet.  This means that LAVA can be sent by paying an incentive fee of LAVA to relayers for the gas, not ETH.
 
 LAVA is 1:1 pegged to 0xBTC.
 
 
-This contract implements EIP712:
+This contract implements EIP712 for Signing Typed Data:
 https://github.com/MetaMask/eth-sig-util
 
 ------------------------------------*/

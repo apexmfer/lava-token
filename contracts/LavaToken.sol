@@ -340,8 +340,10 @@ contract LavaToken is ECRecovery{
 
        //make sure the signer is the depositor of the tokens
        require(from == recoveredSignatureSigner);
-
-
+       
+       //make sure this is the correct 'wallet' for this packet
+       require(address(this) == wallet);
+ 
        //make sure the signature has not expired
        require(block.number < expires);
 

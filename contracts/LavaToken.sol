@@ -215,7 +215,7 @@ contract LavaToken is ECRecovery{
      * @dev Deposit original tokens, receive proxy tokens 1:1
      * This method requires token approval.
      *  
-     * @param amount 
+     * @param amount of tokens to deposit
      */
     function mutateTokens(address from, uint amount) public returns (bool)
     {   
@@ -237,7 +237,7 @@ contract LavaToken is ECRecovery{
      *
      *  
      *
-     * @param amount 
+     * @param amount of tokens to withdraw
      */
     function unmutateTokens( uint amount) public returns (bool)
     {

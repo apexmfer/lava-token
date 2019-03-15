@@ -422,7 +422,7 @@ contract LavaToken is ECRecovery{
 
      function _sendApproveAndCall(address from, address to, uint tokens, bytes memory methodName) internal
      {
-         ApproveAndCallFallBack(to).receiveApproval(from, tokens, masterToken, bytes(methodName));
+         ApproveAndCallFallBack(to).receiveApproval(from, tokens, address(this), bytes(methodName));
      }
 
 

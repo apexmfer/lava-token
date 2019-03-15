@@ -269,20 +269,20 @@ contract("LavaToken", (accounts) => {
                   //https://github.com/ethers-io/ethers.js/issues/46/
 
 
+                  var packetData ={
+                    methodName:methodName,
+                    relayAuthority:relayAuthority,
+                    from: from,
+                    to: to,
+                    wallet:walletAddress,
+                   // token:token,
+                    tokens:tokenAmount,
+                   // relayerRewardToken:relayerRewardToken,
+                    relayerRewardTokens:relayerRewardTokens,
+                    expires:expires,
+                    nonce:nonce
+                  }
 
-
-                  var tuple = [
-                  methodName,
-                  relayAuthority,
-                  from,
-                  to,
-                  walletAddress,
-                  tokenAmount,
-                  relayerRewardTokens,
-                  expires,
-                  nonce];
-
-                    console.log('  tuple   ',   tuple  )
 
 
 
@@ -306,6 +306,11 @@ contract("LavaToken", (accounts) => {
 
 
 
+            var computedSignature = LavaTestUtils.signTypedData( typedDataHash,privateKey)
+            packetData.signature = computedSignature;
+
+
+
                 //how to generate a good signature using web3 ?
                 //---------------??????????????????????
                 //https://github.com/ethereumjs/ethereumjs-util/blob/master/test/index.js
@@ -314,6 +319,7 @@ contract("LavaToken", (accounts) => {
                   var privKey = Buffer.from(privateKey, 'hex')
 
                 var bufferToSign = Buffer.from(typedDataHash , 'hex')
+
 
                 //var sigBytes = (secp256k1.sign(typedDataHash, privKey)).signature;
 
@@ -334,6 +340,9 @@ contract("LavaToken", (accounts) => {
                 console.log('@@ recover', recoveredAddress.toString('hex')  )
 
                assert.equal( '0x'+recoveredAddress.toString('hex') , test_account.address.toLowerCase())
+
+
+               assert.equal( LavaTestUtils.lavaPacketHasValidSignature( packetData   )  ,true );
 
 
 
@@ -635,7 +644,7 @@ contract("LavaToken", (accounts) => {
 
                           */
 
-                          var result2 = await    lavaContract.methods.approveTokensWithSignature(
+                          var result2 = await lavaContract.methods.approveTokensWithSignature(
                               methodname,
                               relayAuthority,
                               from,

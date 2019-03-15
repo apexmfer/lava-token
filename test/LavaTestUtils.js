@@ -21,16 +21,20 @@ module.exports = class LavaTestUtils{
 
 
 
-
-   signTypedData(privateKey, msgParams)
+  //get the signature !!
+   static signTypedData(typedDataHash, privateKey )
   {
 
-    const msgHash = ethSigUtil.typedSignatureHash(msgParams.data)
-    console.log('msghash1',msgHash)
+    //const msgHash = ethSigUtil.typedSignatureHash(msgParams.data)
+    console.log('msghash1',typedDataHash)
 
-    var msgBuffer= ethUtil.toBuffer(msgHash)
 
-    const sig = ethUtil.ecsign(msgBuffer, privateKey)
+    var privKey = Buffer.from(privateKey, 'hex')
+
+    var bufferToSign = Buffer.from(typedDataHash , 'hex')
+
+
+    const sig = ethUtil.ecsign(bufferToSign, privKey)
     return ethUtil.bufferToHex(ethSigUtil.concatSig(sig.v, sig.r, sig.s))
 
   }
@@ -74,12 +78,13 @@ function typedSignatureHash(typedData) {
 
 
 
-
+/*
  getLavaPacketSchemaHash()  //fix me
  {
     var hardcodedSchemaHash = '0x8fd4f9177556bbc74d0710c8bdda543afd18cc84d92d64b5620d5f1881dceb37' ;
     return hardcodedSchemaHash;
  }
+ */
 
  static getLavaTypedDataHash(typedData,types)
  {
@@ -194,13 +199,13 @@ function typedSignatureHash(typedData) {
 
        //this is borked
        var sigHash = LavaTestUtils.getLavaTypedDataHash(typedData,types);
-
+       var hashBuf = ethUtil.toBuffer(sigHash)
 
        var msgBuf = ethUtil.toBuffer(packetData.signature)
        const res = ethUtil.fromRpcSig(msgBuf);
 
 
-       var hashBuf = ethUtil.toBuffer(sigHash)
+
 
        const pubKey  = ethUtil.ecrecover(hashBuf, res.v, res.r, res.s);
        const addrBuf = ethUtil.pubToAddress(pubKey);

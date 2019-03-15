@@ -79,7 +79,7 @@ contract DeMutator{
        */
      function receiveApproval(address from, uint256 tokens, address token, bytes memory data) public returns (bool success) {
 
-        require(demutateTokens( from,token,tokens ));
+        require(_demutateTokens( from,token,tokens ));
 
         return true;
 

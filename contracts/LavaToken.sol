@@ -179,11 +179,11 @@ contract LavaToken is ECRecovery{
     return EIP712DOMAIN_TYPEHASH;
  }
 
-  function getEIP712DomainHash(string memory name, string memory version, uint256 chainId, address verifyingContract) public pure returns (bytes32) {
+  function getEIP712DomainHash(string memory contractName, string memory version, uint256 chainId, address verifyingContract) public pure returns (bytes32) {
 
     return keccak256(abi.encode(
           EIP712DOMAIN_TYPEHASH,
-          keccak256(bytes(name)),
+          keccak256(bytes(contractName)),
           keccak256(bytes(version)),
           chainId,
           verifyingContract

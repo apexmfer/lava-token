@@ -92,7 +92,7 @@ function typedSignatureHash(typedData) {
    var typedDataHash = ethUtil.sha3(
        Buffer.concat([
            Buffer.from('1901', 'hex'),
-  //         EIP712Helper.structHash('EIP712Domain', typedData.domain, types),
+           EIP712HelperV3.structHash('EIP712Domain', typedData.domain, types),
            EIP712HelperV3.structHash(typedData.primaryType, typedData.message, types),
        ]),
    );

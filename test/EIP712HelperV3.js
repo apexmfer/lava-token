@@ -3,7 +3,7 @@ const abi = require('ethereumjs-abi');
 
 
 
-module.exports = class EIP712Helper{
+module.exports = class EIP712HelperV3{
 
     // Recursively finds all the dependencies of a type
     static  dependencies(primaryType, types, found = []) {
@@ -15,7 +15,7 @@ module.exports = class EIP712Helper{
         }
         found.push(primaryType);
         for (let field of types[primaryType]) {
-            for (let dep of EIP712Helper.dependencies(field.type, types, found)) {
+            for (let dep of EIP712HelperV3.dependencies(field.type, types, found)) {
                 if (!found.includes(dep)) {
                     found.push(dep);
                 }
@@ -26,7 +26,7 @@ module.exports = class EIP712Helper{
 
     static  encodeType(primaryType, types) {
         // Get dependencies primary first, then alphabetical
-        let deps = EIP712Helper.dependencies(primaryType, types);
+        let deps = EIP712HelperV3.dependencies(primaryType, types);
         deps = deps.filter(t => t != primaryType);
         deps = [primaryType].concat(deps.sort());
 
@@ -40,7 +40,7 @@ module.exports = class EIP712Helper{
     }
 
     static typeHash(primaryType, types) {
-        return ethUtil.sha3(EIP712Helper.encodeType(primaryType, types));
+        return ethUtil.sha3(EIP712HelperV3.encodeType(primaryType, types));
     }
 
     static encodeData(primaryType, data, types) {
@@ -49,7 +49,7 @@ module.exports = class EIP712Helper{
 
         // Add typehash
         encTypes.push('bytes32');
-        encValues.push(EIP712Helper.typeHash(primaryType, types));
+        encValues.push(EIP712HelperV3.typeHash(primaryType, types));
 
         // Add field contents
         for (let field of types[primaryType]) {
@@ -60,7 +60,7 @@ module.exports = class EIP712Helper{
                 encValues.push(value);
             } else if (types[field.type] !== undefined) {
                 encTypes.push('bytes32');
-                value = ethUtil.sha3(EIP712Helper.encodeData(field.type, value, types));
+                value = ethUtil.sha3(EIP712HelperV3.encodeData(field.type, value, types));
                 encValues.push(value);
             } else if (field.type.lastIndexOf(']') === field.type.length - 1) {
                 throw 'TODO: Arrays currently unimplemented in encodeData';
@@ -74,7 +74,7 @@ module.exports = class EIP712Helper{
     }
 
     static structHash(primaryType, data, types) {
-        return ethUtil.sha3(EIP712Helper.encodeData(primaryType, data, types));
+        return ethUtil.sha3(EIP712HelperV3.encodeData(primaryType, data, types));
     }
 
 

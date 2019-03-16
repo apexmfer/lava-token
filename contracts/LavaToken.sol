@@ -171,18 +171,18 @@ contract LavaToken is ECRecovery{
 
 
 
-  bytes32 constant LAVADOMAIN_TYPEHASH = keccak256(
-     "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
- );
+  bytes32 constant EIP712DOMAIN_TYPEHASH = keccak256(
+        "EIP712Domain(string contractName,string version,uint256 chainId,address verifyingContract)"
+    );
 
  function getLavaDomainTypehash() public pure returns (bytes32) {
-    return LAVADOMAIN_TYPEHASH;
+    return EIP712DOMAIN_TYPEHASH;
  }
 
-  function getLavaDomainHash(string memory name, string memory version, uint256 chainId, address verifyingContract) public pure returns (bytes32) {
+  function getEIP712DomainHash(string memory name, string memory version, uint256 chainId, address verifyingContract) public pure returns (bytes32) {
 
     return keccak256(abi.encode(
-          LAVADOMAIN_TYPEHASH,
+          EIP712DOMAIN_TYPEHASH,
           keccak256(bytes(name)),
           keccak256(bytes(version)),
           chainId,
@@ -333,7 +333,7 @@ contract LavaToken is ECRecovery{
           // Note: we need to use `encodePacked` here instead of `encode`.
           bytes32 digest = keccak256(abi.encodePacked(
               "\x19\x01",
-              getLavaDomainHash('Lava Wallet','1',1,address(this)),
+              getEIP712DomainHash('Lava Wallet','1',1,address(this)),
               getLavaPacketHash(methodName,relayAuthority,from,to,wallet,tokens,relayerRewardTokens,expires,nonce)
           ));
           return digest;

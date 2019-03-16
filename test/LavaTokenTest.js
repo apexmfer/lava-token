@@ -16,6 +16,9 @@ const Tx = require('ethereumjs-tx')
 
 
 var EIP712Helper = require("./EIP712Helper");
+
+var EIP712HelperV3 = require("./EIP712HelperV3");
+
 var LavaTestUtils = require("./LavaTestUtils");
 
 var lavaTestUtils = new LavaTestUtils();
@@ -64,7 +67,12 @@ contract("LavaToken", (accounts) => {
 
         const typedData = {
                 types: {
-
+                    EIP712Domain: [
+                        { name: "contractName", type: "string" },
+                        { name: "version", type: "string" },
+                        { name: "chainId", type: "uint256" },
+                        { name: "verifyingContract", type: "address" }
+                    ],
                     LavaPacket: [
                         { name: 'methodName', type: 'string' },
                         { name: 'relayAuthority', type: 'address' },
@@ -74,16 +82,17 @@ contract("LavaToken", (accounts) => {
                         { name: 'tokens', type: 'uint256' },
                         { name: 'relayerRewardTokens', type: 'uint256' },
                         { name: 'expires', type: 'uint256' },
-                        { name: 'nonce', type: 'uint256' },
-                        { name: 'callData', type: 'bytes' }
+                        { name: 'nonce', type: 'uint256' }
                     ],
                 },
                 primaryType: 'LavaPacket',
                 domain: {
-                    name: 'Lava Token',
-                    verifyingContract: lavaContract.options.address,
+                  contractName: 'Lava Wallet',
+                  version: '1',
+                  chainId: 1,
+                  verifyingContract: lavaContract.options.address
                 },
-                packet: {   //what is word supposed to be ??
+                message: {   //what is word supposed to be ??
                     methodName: 'approve',
                     relayAuthority: relayAuthorityAddress,
                     from: test_account.address,
@@ -92,26 +101,48 @@ contract("LavaToken", (accounts) => {
                     tokens: 0,
                     relayerRewardTokens: 0,
                     expires: 999999999,
-                    nonce: 0,
-                    callData: web3utils.asciiToHex('')
+                    nonce: 0
                 },
             };
 
             const types = typedData.types;
 
 
-                var typedDataHash = ethUtil.sha3(
-                    Buffer.concat([
-                        Buffer.from('1901', 'hex'),
-                       EIP712Helper.structHash(typedData.primaryType, typedData.packet, types),
-                    ]),
-                );
+              var typedDataHash = ethUtil.sha3(
+                  Buffer.concat([
+                      Buffer.from('1901', 'hex'),
+                      EIP712HelperV3.structHash('EIP712Domain', typedData.domain, types),
+                      EIP712HelperV3.structHash(typedData.primaryType, typedData.message, types),
+                  ]),
+              );
+
+
+                  var testpacketdata = {
+                    methodName: 'approve',
+                    relayAuthority: relayAuthorityAddress,
+                    from: test_account.address,
+                    to: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
+                    wallet: lavaContract.options.address,
+                    tokens: 0,
+                    relayerRewardTokens: 0,
+                    expires: 999999999,
+                    nonce: 0
+                  }
+
+                var computedMessageHash = EIP712HelperV3.structHash(typedData.primaryType, typedData.message, types)
+                var contractMessageHash = await lavaContract.methods.getLavaPacketHash(testpacketdata.methodName,testpacketdata.relayAuthority,testpacketdata.from,testpacketdata.to,testpacketdata.wallet,testpacketdata.tokens,testpacketdata.relayerRewardTokens,testpacketdata.expires,testpacketdata.nonce).call();
+
+                assert.equal('0x'+computedMessageHash.toString('hex'), contractMessageHash)
+
+                var computedDomainHash = EIP712HelperV3.structHash('EIP712Domain', typedData.domain, types)
+                var contractDomainHash = await lavaContract.methods.getEIP712DomainHash('Lava Wallet','1',1,lavaContract.options.address).call();
+
+                assert.equal('0x'+computedDomainHash.toString('hex'), contractDomainHash)
 
                 const sig = ethUtil.ecsign(typedDataHash , Buffer.from(test_account.privateKey, 'hex') );
 
                 //assert.equal(ethUtil.bufferToHex(typedDataHash), '0xa5b19006c219117816a77e959d656b48f0f21e037fc152224d97a5c016b63692' )
                 assert.ok(sig )
-
 
             });
 
@@ -153,7 +184,7 @@ contract("LavaToken", (accounts) => {
 
 
           //    var domainStructHash =  EIP712Helper.typeHash('EIP712Domain', typedData.types);
-              var lavaPacketStructHash =  EIP712Helper.typeHash('LavaPacket', typedData.types);
+              var lavaPacketStructHash =  EIP712HelperV3.typeHash('LavaPacket', typedData.types);
 
 
         //      assert.equal(LavaTestUtils.bufferToHex(domainStructHash), domainTypehash    ); //initialized
@@ -198,7 +229,7 @@ contract("LavaToken", (accounts) => {
 
 
            //why is this failing on the values !?
-           assert.equal(lavaPacketHash, LavaTestUtils.bufferToHex( EIP712Helper.structHash('LavaPacket', typedData.packet, typedData.types) )     );
+           assert.equal(lavaPacketHash, LavaTestUtils.bufferToHex( EIP712HelperV3.structHash('LavaPacket', typedData.message, typedData.types) )     );
 
 
 
@@ -353,7 +384,7 @@ contract("LavaToken", (accounts) => {
              let signatureData = ethUtil.toRpcSig(sig.v,sig.r,sig.s);
              console.log('meep sig',signatureData)
 
-               var lavaPacketStruct =   typedData.packet
+               var lavaPacketStruct =   typedData.message
 
 
 
@@ -476,7 +507,7 @@ contract("LavaToken", (accounts) => {
                         console.log('@@ lavaContract',  lavaContract.address)
 
 
-                        var lavaPacketStruct =   typedData.packet
+                        var lavaPacketStruct =   typedData.message
                         console.log('  lavaPacketStruct   ',   lavaPacketStruct  )
 
 
@@ -742,7 +773,7 @@ contract("LavaToken", (accounts) => {
                           console.log('@@ lavaContract',  lavaContract.address)
 
 
-                          var lavaPacketStruct =   typedData.packet
+                          var lavaPacketStruct =   typedData.message
                           console.log('  lavaPacketStruct   ',   lavaPacketStruct  )
 
 

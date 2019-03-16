@@ -763,6 +763,25 @@ contract("LavaToken", (accounts) => {
 
                             var msgHash = LavaTestUtils.getLavaTypedDataHash(typedData,types);
 
+
+
+                            var lavaMsgHash = await lavaContract.methods.getLavaTypedDataHash(
+                              methodname,
+                              relayAuthority,
+                              from,
+                              to,
+                              walletAddress,
+                              tokenAmount,
+                              relayerReward,
+                              expires,
+                              nonce ).call({from: test_account.address})
+
+                              console.log('lavaMsgHash',lavaMsgHash)
+
+                            assert.equal(lavaMsgHash, '0x'+ msgHash.toString('hex') );
+
+                            
+
                             var privateKey = test_account.privateKey;
 
                            var privKey = Buffer.from(privateKey, 'hex')

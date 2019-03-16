@@ -3,6 +3,7 @@ var web3utils = require('web3-utils')
 const ethUtil = require('ethereumjs-util')
 var ethSigUtil = require('eth-sig-util')
 var EIP712Helper = require("./EIP712Helper");
+var EIP712HelperV3 = require("./EIP712HelperV3");
 
 
 /*
@@ -92,14 +93,73 @@ function typedSignatureHash(typedData) {
        Buffer.concat([
            Buffer.from('1901', 'hex'),
   //         EIP712Helper.structHash('EIP712Domain', typedData.domain, types),
-           EIP712Helper.structHash(typedData.primaryType, typedData.packet, types),
+           EIP712HelperV3.structHash(typedData.primaryType, typedData.message, types),
        ]),
    );
 
    return typedDataHash;
  }
 
+
  static getLavaTypedDataFromParams(   methodName,relayAuthority,from,
+   to,walletAddress,tokenAmount, relayerRewardTokens,expires,nonce )
+ {
+   const typedData = {
+           types: {
+               EIP712Domain: [
+                   { name: "contractName", type: "string" },
+                   { name: "version", type: "string" },
+                   { name: "chainId", type: "uint256" },
+                   { name: "verifyingContract", type: "address" }
+               ],
+               LavaPacket: [
+                   { name: 'methodName', type: 'string' },
+                   { name: 'relayAuthority', type: 'address' },
+                   { name: 'from', type: 'address' },
+                   { name: 'to', type: 'address' },
+                   { name: 'wallet', type: 'address' },
+                   //{ name: 'token', type: 'address' },
+                   { name: 'tokens', type: 'uint256' },
+                   //{ name: 'relayerRewardToken', type: 'address' },
+                   { name: 'relayerRewardTokens', type: 'uint256' },
+                   { name: 'expires', type: 'uint256' },
+                   { name: 'nonce', type: 'uint256' }
+               ],
+           },
+           primaryType: 'LavaPacket',
+           domain: {
+               contractName: 'Lava Wallet',
+               version: '1',
+               chainId: 1,
+               verifyingContract: walletAddress
+           },
+           message: {
+               methodName: methodName,
+               relayAuthority: relayAuthority,
+               from: from,
+               to: to,
+               wallet: walletAddress,
+              // token: tokenAddress,
+               tokens: tokenAmount,
+            //   relayerRewardToken: relayerRewardToken,
+               relayerRewardTokens: relayerRewardTokens,
+               expires: expires,
+               nonce: nonce
+           }
+       };
+
+
+
+
+
+     return typedData;
+ }
+
+
+
+
+
+ static getLavaTypedDataFromParamsOld(   methodName,relayAuthority,from,
    to,walletAddress,tokenAmount, relayerRewardTokens,expires,nonce )
  {
    const typedData = {

@@ -169,13 +169,36 @@ contract LavaToken is ECRecovery{
 
 
 
-   bytes32 constant LAVAPACKET_TYPEHASH = keccak256(
-      "LavaPacket(string methodName,address relayAuthority,address from,address to,address wallet,uint256 tokens,uint256 relayerRewardTokens,uint256 expires,uint256 nonce)"
-  );
 
-   function getLavaPacketTypehash() public pure returns (bytes32) {
-      return LAVAPACKET_TYPEHASH;
+
+  bytes32 constant LAVADOMAIN_TYPEHASH = keccak256(
+     "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
+ );
+
+ function getLavaDomainTypehash() public pure returns (bytes32) {
+    return LAVADOMAIN_TYPEHASH;
+ }
+
+  function getLavaDomainHash(string memory name, string memory version, uint256 chainId, address verifyingContract) public pure returns (bytes32) {
+
+    return keccak256(abi.encode(
+          LAVADOMAIN_TYPEHASH,
+          keccak256(bytes(name)),
+          keccak256(bytes(version)),
+          chainId,
+          verifyingContract
+      ));
   }
+
+  bytes32 constant LAVAPACKET_TYPEHASH = keccak256(
+     "LavaPacket(string methodName,address relayAuthority,address from,address to,address wallet,uint256 tokens,uint256 relayerRewardTokens,uint256 expires,uint256 nonce)"
+ );
+
+  function getLavaPacketTypehash() public pure returns (bytes32) {
+     return LAVAPACKET_TYPEHASH;
+ }
+
+
 
  function getLavaPacketHash(string memory methodName, address relayAuthority,address from,address to, address wallet,uint256 tokens,uint256 relayerRewardTokens,uint256 expires,uint256 nonce) public pure returns (bytes32) {
         return keccak256(abi.encode(
@@ -304,13 +327,13 @@ contract LavaToken is ECRecovery{
         Read-only method that returns the EIP712 message structure to be signed for a lava packet.
     */
 
-   function getLavaTypedDataHash(string memory methodName, address relayAuthority,address from,address to, address wallet,uint256 tokens,uint256 relayerRewardTokens,uint256 expires,uint256 nonce) public  pure returns (bytes32) {
+   function getLavaTypedDataHash(string memory methodName, address relayAuthority,address from,address to, address wallet,uint256 tokens,uint256 relayerRewardTokens,uint256 expires,uint256 nonce) public view returns (bytes32) {
 
 
           // Note: we need to use `encodePacked` here instead of `encode`.
           bytes32 digest = keccak256(abi.encodePacked(
               "\x19\x01",
-            //  DOMAIN_SEPARATOR,
+              getLavaDomainHash('Lava Wallet','1',1,address(this)),
               getLavaPacketHash(methodName,relayAuthority,from,to,wallet,tokens,relayerRewardTokens,expires,nonce)
           ));
           return digest;

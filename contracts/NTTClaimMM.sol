@@ -4,7 +4,7 @@ pragma solidity ^0.5.0;
 
 /**------------------------------------
 
-NTT Buyer
+NTT Claim Middleman
 
 This is a Lava Middleman contract that claims a new Nametag Token
 
@@ -53,7 +53,7 @@ contract ApproveAndCallFallBack {
 }
 
 
-contract NTTBuyer{
+contract NTTClaimMM{
 
 
   address nametagTokenAddress;
@@ -74,7 +74,7 @@ contract NTTBuyer{
     function _claimNametagToken(address from, string memory name) internal returns (bool success) {
 
           uint256 tokenId = (uint256) (keccak256(abi.encodePacked( name )));
-         
+
           //claim the token for this contract
           require(NametagInterface(nametagTokenAddress).claimToken(address(this), name ));
 

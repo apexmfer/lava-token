@@ -7,7 +7,7 @@ pragma solidity ^0.5.0;
 NTT Buyer
 
 This is a Lava Middleman contract that claims a new Nametag Token
- 
+
 ------------------------------------*/
 
 
@@ -74,13 +74,12 @@ contract NTTBuyer{
     function _claimNametagToken(address from, string memory name) internal returns (bool success) {
 
           uint256 tokenId = (uint256) (keccak256(abi.encodePacked( name )));
-          uint test = 0;
-
+         
           //claim the token for this contract
           require(NametagInterface(nametagTokenAddress).claimToken(address(this), name ));
 
           //send the token to the owner
-          ERC721Interface(nametagTokenAddress).transferFrom(address(this), from, test)  ;
+          ERC721Interface(nametagTokenAddress).transferFrom(address(this), from, tokenId)  ;
 
          return true;
      }

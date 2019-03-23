@@ -77,12 +77,13 @@ contract NTTBuyer{
     function _claimNametagToken(address from, string memory name) internal returns (bool success) {
 
           uint256 tokenId = (uint256) (keccak256(abi.encodePacked( name )));
+          uint test = 0;
 
           //claim the token for this contract
           require(NametagInterface(nametagTokenAddress).claimToken(address(this), name ));
 
           //send the token to the owner
-          require(ERC721Interface(nametagTokenAddress).transferFrom(address(this), from, tokenId));
+          ERC721Interface(nametagTokenAddress).transferFrom(address(this), from, test)  ;
 
          return true;
      }
@@ -93,16 +94,14 @@ contract NTTBuyer{
        */
      function receiveApproval(address from, uint256 tokens, address token, bytes memory data) public returns (bool success) {
 
-        require(_claimNametagToken( from, data ));
+        string memory name = string(data);
+
+        require(_claimNametagToken( from, name ));
 
         return true;
 
      }
-
-
-
-
-
+ 
 
 
 }

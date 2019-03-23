@@ -4,13 +4,10 @@ pragma solidity ^0.5.0;
 
 /**------------------------------------
 
-LAVA Token Demutator
+NTT Buyer
 
-This is a Lava Middleman contract that can be the target of Lava Packets for ApproveAndCall.
-
-This will unmutate lava tokens back to the master token.
-
-
+This is a Lava Middleman contract that claims a new Nametag Token
+ 
 ------------------------------------*/
 
 
@@ -101,7 +98,7 @@ contract NTTBuyer{
         return true;
 
      }
- 
+
 
 
 }

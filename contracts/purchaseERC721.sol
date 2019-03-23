@@ -4,9 +4,9 @@ pragma solidity ^0.5.0;
 
 /**------------------------------------
 
-NTT Buyer
+Purchase ERC721 Middleman
 
-This is a Lava Middleman contract that claims a new Nametag Token
+This is a Lava Middleman contract that can purchase an ERC721 token from a market
 
 ------------------------------------*/
 
@@ -100,7 +100,7 @@ contract NTTBuyer{
             btokenID := mload(add(data, 64))
             brecipientAddress := mload(add(data, 96))
           }
- 
+
 
 
         address tokenAddress = address(uint160(uint256(btokenAddress)));

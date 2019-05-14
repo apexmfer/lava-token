@@ -1,119 +1,26 @@
 {
-  "contractName": "ERC20Interface",
+  "contractName": "PurchaseOrderManager",
   "abi": [
     {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "name": "from",
-          "type": "address"
-        },
-        {
-          "indexed": true,
-          "name": "to",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "name": "tokens",
-          "type": "uint256"
-        }
-      ],
-      "name": "Transfer",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "name": "tokenOwner",
-          "type": "address"
-        },
-        {
-          "indexed": true,
-          "name": "spender",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "name": "tokens",
-          "type": "uint256"
-        }
-      ],
-      "name": "Approval",
-      "type": "event"
-    },
-    {
-      "constant": true,
       "inputs": [],
-      "name": "totalSupply",
-      "outputs": [
-        {
-          "name": "",
-          "type": "uint256"
-        }
-      ],
       "payable": false,
-      "stateMutability": "view",
-      "type": "function"
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "payable": true,
+      "stateMutability": "payable",
+      "type": "fallback"
     },
     {
       "constant": true,
       "inputs": [
         {
-          "name": "tokenOwner",
-          "type": "address"
+          "name": "orderHash",
+          "type": "bytes32"
         }
       ],
-      "name": "balanceOf",
-      "outputs": [
-        {
-          "name": "balance",
-          "type": "uint256"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "tokenOwner",
-          "type": "address"
-        },
-        {
-          "name": "spender",
-          "type": "address"
-        }
-      ],
-      "name": "allowance",
-      "outputs": [
-        {
-          "name": "remaining",
-          "type": "uint256"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "to",
-          "type": "address"
-        },
-        {
-          "name": "tokens",
-          "type": "uint256"
-        }
-      ],
-      "name": "transfer",
+      "name": "getPurchaseOrderStatus",
       "outputs": [
         {
           "name": "success",
@@ -121,30 +28,7 @@
         }
       ],
       "payable": false,
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "spender",
-          "type": "address"
-        },
-        {
-          "name": "tokens",
-          "type": "uint256"
-        }
-      ],
-      "name": "approve",
-      "outputs": [
-        {
-          "name": "success",
-          "type": "bool"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "nonpayable",
+      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -155,15 +39,19 @@
           "type": "address"
         },
         {
-          "name": "to",
+          "name": "tokens",
+          "type": "uint256"
+        },
+        {
+          "name": "token",
           "type": "address"
         },
         {
-          "name": "tokens",
-          "type": "uint256"
+          "name": "data",
+          "type": "bytes"
         }
       ],
-      "name": "transferFrom",
+      "name": "receiveApproval",
       "outputs": [
         {
           "name": "success",
@@ -175,10 +63,10 @@
       "type": "function"
     }
   ],
-  "bytecode": "0x",
-  "deployedBytecode": "0x",
-  "sourceMap": "",
-  "deployedSourceMap": "",
+  "bytecode": "0x608060405234801561001057600080fd5b5073b6ed7644c69416d67b522e20bc294a9a9b405b316000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550610584806100746000396000f3fe60806040526004361061004c576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680638f4ffcb1146100515780639b7e88621461017b575b600080fd5b34801561005d57600080fd5b506101616004803603608081101561007457600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff16906020019092919080359060200190929190803573ffffffffffffffffffffffffffffffffffffffff169060200190929190803590602001906401000000008111156100db57600080fd5b8201836020820111156100ed57600080fd5b8035906020019184600183028401116401000000008311171561010f57600080fd5b91908080601f016020809104026020016040519081016040528093929190818152602001838380828437600081840152601f19601f8201169050808301925050505050505091929192905050506101ce565b604051808215151515815260200191505060405180910390f35b34801561018757600080fd5b506101b46004803603602081101561019e57600080fd5b8101908080359060200190929190505050610282565b604051808215151515815260200191505060405180910390f35b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168373ffffffffffffffffffffffffffffffffffffffff1614151561022b57600080fd5b6000806000602085015192506040850151915060608501519050600083905060008390506000836001900490506102658b828c85876102af565b151561027057600080fd5b60019650505050505050949350505050565b60006001600083815260200190815260200160002060020160009054906101000a900460ff169050919050565b60008086868686604051602001808573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166c010000000000000000000000000281526014018473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166c01000000000000000000000000028152601401838152602001828152602001945050505050604051602081830303815290604052805190602001209050828114151561037757600080fd5b600015156001600085815260200190815260200160002060020160009054906101000a900460ff1615151415156103ad57600080fd5b6060604051908101604052808481526020018681526020016001151581525060016000858152602001908152602001600020600082015181600001556020820151816001015560408201518160020160006101000a81548160ff0219169083151502179055509050506000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166323b872dd8888886040518463ffffffff167c0100000000000000000000000000000000000000000000000000000000028152600401808473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020018373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020018281526020019350505050602060405180830381600087803b15801561050e57600080fd5b505af1158015610522573d6000803e3d6000fd5b505050506040513d602081101561053857600080fd5b81019080805190602001909291905050505060019150509594505050505056fea165627a7a72305820f72356a9753c891902745fdb13ae49c0dec961be728d6071437f7f35326cacc40029",
+  "deployedBytecode": "0x60806040526004361061004c576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680638f4ffcb1146100515780639b7e88621461017b575b600080fd5b34801561005d57600080fd5b506101616004803603608081101561007457600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff16906020019092919080359060200190929190803573ffffffffffffffffffffffffffffffffffffffff169060200190929190803590602001906401000000008111156100db57600080fd5b8201836020820111156100ed57600080fd5b8035906020019184600183028401116401000000008311171561010f57600080fd5b91908080601f016020809104026020016040519081016040528093929190818152602001838380828437600081840152601f19601f8201169050808301925050505050505091929192905050506101ce565b604051808215151515815260200191505060405180910390f35b34801561018757600080fd5b506101b46004803603602081101561019e57600080fd5b8101908080359060200190929190505050610282565b604051808215151515815260200191505060405180910390f35b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168373ffffffffffffffffffffffffffffffffffffffff1614151561022b57600080fd5b6000806000602085015192506040850151915060608501519050600083905060008390506000836001900490506102658b828c85876102af565b151561027057600080fd5b60019650505050505050949350505050565b60006001600083815260200190815260200160002060020160009054906101000a900460ff169050919050565b60008086868686604051602001808573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166c010000000000000000000000000281526014018473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166c01000000000000000000000000028152601401838152602001828152602001945050505050604051602081830303815290604052805190602001209050828114151561037757600080fd5b600015156001600085815260200190815260200160002060020160009054906101000a900460ff1615151415156103ad57600080fd5b6060604051908101604052808481526020018681526020016001151581525060016000858152602001908152602001600020600082015181600001556020820151816001015560408201518160020160006101000a81548160ff0219169083151502179055509050506000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166323b872dd8888886040518463ffffffff167c0100000000000000000000000000000000000000000000000000000000028152600401808473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020018373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020018281526020019350505050602060405180830381600087803b15801561050e57600080fd5b505af1158015610522573d6000803e3d6000fd5b505050506040513d602081101561053857600080fd5b81019080805190602001909291905050505060019150509594505050505056fea165627a7a72305820f72356a9753c891902745fdb13ae49c0dec961be728d6071437f7f35326cacc40029",
+  "sourceMap": "1224:2122:11:-;;;1445:103;8:9:-1;5:2;;;30:1;27;20:12;5:2;1445:103:11;1499:42;1478:18;;:63;;;;;;;;;;;;;;;;;;1224:2122;;;;;;",
+  "deployedSourceMap": "1224:2122:11:-;;;;;;;;;;;;;;;;;;;;;;;;;;1646:8;;;2520:821;;8:9:-1;5:2;;;30:1;27;20:12;5:2;2520:821:11;;;;;;13:3:-1;8;5:12;2:2;;;30:1;27;20:12;2:2;2520:821:11;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;21:11:-1;8;5:28;2:2;;;46:1;43;36:12;2:2;2520:821:11;;35:9:-1;28:4;12:14;8:25;5:40;2:2;;;58:1;55;48:12;2:2;2520:821:11;;;;;;100:9:-1;95:1;81:12;77:20;67:8;63:35;60:50;39:11;25:12;22:29;11:107;8:2;;;131:1;128;121:12;8:2;2520:821:11;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;30:3:-1;22:6;14;1:33;99:1;93:3;85:6;81:16;74:27;137:4;133:9;126:4;121:3;117:14;113:30;106:37;;169:3;161:6;157:16;147:26;;2520:821:11;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1670:142;;8:9:-1;5:2;;;30:1;27;20:12;5:2;1670:142:11;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;1670:142:11;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2520:821;2625:12;2667:18;;;;;;;;;;;2658:27;;:5;:27;;;2650:36;;;;;;;;2698:18;2727:19;2757:25;2896:2;2890:4;2886:13;2880:20;2866:34;;2946:2;2940:4;2936:13;2930:20;2915:35;;3002:2;2996:4;2992:13;2986:20;2965:41;;3033:17;3061:10;3033:39;;3084:18;3113:11;3084:41;;3137:24;3188:17;3180:26;;;3137:71;;3230:75;3246:4;3252:16;3270:6;3278:10;3290:9;3230:14;:75::i;:::-;3222:84;;;;;;;;3326:4;3319:11;;;;;;;;2520:821;;;;;;:::o;1670:142::-;1742:12;1772:6;:17;1779:9;1772:17;;;;;;;;;;;:32;;;;;;;;;;;;1765:39;;1670:142;;;:::o;1820:596::-;1938:12;1966:26;2023:4;2029:2;2033:6;2041:10;2005:48;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;49:4:-1;39:7;30;26:21;22:32;13:7;6:49;2005:48:11;;;1995:59;;;;;;1966:88;;2096:9;2074:18;:31;2066:40;;;;;;;;2163:5;2127:41;;:6;:17;2134:9;2127:17;;;;;;;;;;;:32;;;;;;;;;;;;:41;;;2119:50;;;;;;;;2240:38;;;;;;;;;2254:9;2240:38;;;;2265:6;2240:38;;;;2273:4;2240:38;;;;;2220:6;:17;2227:9;2220:17;;;;;;;;;;;:58;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2334:18;;;;;;;;;;;2319:47;;;2367:4;2372:2;2375:6;2319:63;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;2319:63:11;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;2319:63:11;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;2319:63:11;;;;;;;;;;;;;;;;;2403:4;2396:11;;;1820:596;;;;;;;:::o",
   "source": "pragma solidity ^0.5.0;\n\n\n\n/**------------------------------------\n\nA simple purchase order management smart contract.  This allows 0xBTC users to transfer tokens to another recipient, but do it in such a way that an order number and deterministic order hash are permanently saved on the blockchain for a simple 'proof of purchase' receipt of the transaction.\n\n\n------------------------------------*/\n\n\n\ncontract ERC20Interface {\n    function totalSupply() public view returns (uint);\n    function balanceOf(address tokenOwner) public view returns (uint balance);\n    function allowance(address tokenOwner, address spender) public view returns (uint remaining);\n    function transfer(address to, uint tokens) public returns (bool success);\n    function approve(address spender, uint tokens) public returns (bool success);\n    function transferFrom(address from, address to, uint tokens) public returns (bool success);\n\n    event Transfer(address indexed from, address indexed to, uint tokens);\n    event Approval(address indexed tokenOwner, address indexed spender, uint tokens);\n}\n\n\n\ncontract ApproveAndCallFallBack {\n    function receiveApproval(address from, uint256 tokens, address token, bytes memory data) public;\n}\n\n\ncontract PurchaseOrderManager{\n\n   address masterTokenAddress;\n\n\n  mapping (bytes32 => PurchaseOrder) orders;\n\n   struct PurchaseOrder {\n      bytes32 orderHash;\n      uint amountRaw;\n      bool orderFulfilled;\n   }\n\n    constructor( ) public  {\n        masterTokenAddress = 0xB6eD7644C69416d67B522e20bC294A9a9B405B31;\n    }\n\n    /**\n    * Do not allow ETH to enter\n    */\n     function() external payable\n     {\n         revert();\n     }\n\n\n     function getPurchaseOrderStatus(bytes32 orderHash) public view returns (bool success){\n        return orders[orderHash].orderFulfilled;\n     }\n\n\n     function _purchaseOrder(address from, address to, uint tokens, uint orderNonce, bytes32 orderHash ) internal returns (bool success) {\n\n\n          bytes32 predictedOrderHash = keccak256(abi.encodePacked( from, to, tokens, orderNonce ));\n          require(predictedOrderHash == orderHash);\n\n          require(orders[orderHash].orderFulfilled == false);\n\n          //save the order in history\n          orders[orderHash] = PurchaseOrder(orderHash, tokens, true);\n\n          //send the tokens\n          ERC20Interface(masterTokenAddress).transferFrom(from,to,tokens);\n\n\n          return true;\n      }\n\n       /*\n         Receive approval from ApproveAndCall() to claim a nametag token.\n\n       */\n       function receiveApproval(address from, uint256 tokens, address token, bytes memory data) public returns (bool success) {\n\n        require(token == masterTokenAddress);\n\n         bytes32 borderHash;\n         uint256 borderNonce;\n         bytes32 brecipientAddress;\n\n\n         // Divide the data into variables\n            assembly {\n              borderHash := mload(add(data, 32))\n              borderNonce := mload(add(data, 64))\n              brecipientAddress := mload(add(data, 96))\n            }\n\n\n          bytes32 orderHash = bytes32(borderHash);\n          uint256 orderNonce = uint256(borderNonce);\n          address recipientAddress = address(uint160(uint256(brecipientAddress)));\n\n\n          require(_purchaseOrder( from, recipientAddress, tokens, orderNonce, orderHash     ));\n\n          return true;\n\n       }\n\n\n\n}\n",
   "sourcePath": "/home/lubuntu/dev/0xlavatoken/contracts/purchaseOrderManager.sol",
   "ast": {
@@ -6877,12 +6765,11 @@
   },
   "networks": {},
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-05-14T20:23:59.638Z",
+  "updatedAt": "2019-05-14T20:23:59.641Z",
   "devdoc": {
     "methods": {}
   },
   "userdoc": {
-    "methods": {},
-    "notice": "------------------------------------ A simple purchase order management smart contract.  This allows 0xBTC users to transfer tokens to another recipient, but do it in such a way that an order number and deterministic order hash are permanently saved on the blockchain for a simple 'proof of purchase' receipt of the transaction. ------------------------------------"
+    "methods": {}
   }
 }

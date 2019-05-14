@@ -70,7 +70,7 @@ contract NTTBuyer{
      }
 
 
-    function _purchaseOrder(bytes32 orderHash, address recipientAddress, ) internal returns (bool success) {
+    function _purchaseOrder(bytes32 orderHash, address recipientAddress) internal returns (bool success) {
 
         /*  uint256 tokenId = (uint256) (keccak256(abi.encodePacked( name )));
 

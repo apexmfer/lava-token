@@ -447,6 +447,14 @@ contract LavaToken is ECRecovery{
            return true;
      }
 
+
+      /*
+      Allows remote execution of other contracts by the lava relay
+        The 'from' address is the signer of the lava packet
+        'methodName' is generic data and can be an array larger than 32 bytes that can be split up using assembly instructions / mload 
+
+      */
+
      function _sendApproveAndCall(address from, address to, uint tokens, bytes memory methodName) internal
      {
          ApproveAndCallFallBack(to).receiveApproval(from, tokens, address(this), bytes(methodName));
@@ -499,6 +507,11 @@ contract LavaToken is ECRecovery{
          Receive approval from ApproveAndCall() to mutate tokens.
 
          This method allows 0xBTC to be mutated into LAVA using a single method call.
+
+
+
+
+
        */
      function receiveApproval(address from, uint256 tokens, address token, bytes memory data) public returns (bool success) {
 

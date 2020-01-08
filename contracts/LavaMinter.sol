@@ -6,7 +6,7 @@ pragma solidity ^0.5.0;
 
 Lava Minter  Middleman
 
-Spend LAVA tokens to solo mine 0xBTC more easily.  Each solo miner must deploy their own copy of this contract.
+Spend LAVA tokens to solo mine 0xBTC more easily
 
 ------------------------------------*/
 
@@ -55,11 +55,10 @@ contract ApproveAndCallFallBack {
 
 contract LavaMinter{
 
-     address masterToken ;
-     address payoutAddress ;
+      address masterToken ;
 
-    constructor(address payout) public {
-       payoutAddress = address(payout);
+
+    constructor(address payoutAddress ) public {
        masterToken = address(0xB6eD7644C69416d67B522e20bC294A9a9B405B31);
     }
 
@@ -89,6 +88,7 @@ contract LavaMinter{
        /*
          Receive approval from ApproveAndCall() to claim a nametag token.
 
+        The 'from' address is the signer of the lava packet
        */
      function receiveApproval(address from, uint256 tokens, address token, bytes memory data) public returns (bool success) {
 

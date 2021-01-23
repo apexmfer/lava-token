@@ -337,7 +337,7 @@ contract LavaToken is ECRecovery{
           // Note: we need to use `encodePacked` here instead of `encode`.
           bytes32 digest = keccak256(abi.encodePacked(
               "\x19\x01",
-              getEIP712DomainHash('Lava Wallet','1',1,address(this)),
+              getEIP712DomainHash('Lava Wallet','1',137,address(this)),
               getLavaPacketHash(methodName,relayAuthority,from,to,wallet,tokens,relayerRewardTokens,expires,nonce)
           ));
           return digest;
@@ -451,7 +451,7 @@ contract LavaToken is ECRecovery{
       /*
       Allows remote execution of other contracts by the lava relay
         The 'from' address is the signer of the lava packet
-        'methodName' is generic data and can be an array larger than 32 bytes that can be split up using assembly instructions / mload 
+        'methodName' is generic data and can be an array larger than 32 bytes that can be split up using assembly instructions / mload
 
       */
 
@@ -507,9 +507,6 @@ contract LavaToken is ECRecovery{
          Receive approval from ApproveAndCall() to mutate tokens.
 
          This method allows 0xBTC to be mutated into LAVA using a single method call.
-
-
-
 
 
        */

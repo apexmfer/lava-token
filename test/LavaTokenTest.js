@@ -6,8 +6,7 @@ https://medium.com/@adrianmcli/migrating-your-truffle-project-to-web3-v1-0-ed3a5
 const { getWeb3, getContractInstance } = require("./web3helpers")
 const web3 = getWeb3()
 const getInstance = getContractInstance(web3)
-
-var secp256k1 = require('secp256k1');
+ 
 const ethAbi = require('ethereumjs-abi')
 var ethUtil =  require('ethereumjs-util');
 var web3utils =  require('web3-utils');
@@ -780,7 +779,7 @@ contract("LavaToken", (accounts) => {
 
                             assert.equal(lavaMsgHash, '0x'+ msgHash.toString('hex') );
 
-                            
+
 
                             var privateKey = test_account.privateKey;
 

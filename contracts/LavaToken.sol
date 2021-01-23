@@ -137,11 +137,15 @@ contract LavaToken is ECRecovery{
     using SafeMath for uint;
 
     address constant public masterToken = 0xB6eD7644C69416d67B522e20bC294A9a9B405B31;
+    uint256 _chainId = 137;
 
     string public name     = "Lava";
     string public symbol   = "LAVA";
     uint8  public decimals = 8;
     uint private _totalSupply;
+
+
+
 
     event  Approval(address indexed src, address indexed ext, uint amt);
     event  Transfer(address indexed src, address indexed dst, uint amt);
@@ -337,7 +341,7 @@ contract LavaToken is ECRecovery{
           // Note: we need to use `encodePacked` here instead of `encode`.
           bytes32 digest = keccak256(abi.encodePacked(
               "\x19\x01",
-              getEIP712DomainHash('Lava Wallet','1',137,address(this)),
+              getEIP712DomainHash('Lava Wallet','1',_chainId,address(this)),
               getLavaPacketHash(methodName,relayAuthority,from,to,wallet,tokens,relayerRewardTokens,expires,nonce)
           ));
           return digest;
